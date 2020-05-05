@@ -1,0 +1,11 @@
+subprojects {
+    apply plugin: "java"
+
+    repositories {
+        mavenCentral()
+    }
+}
+
+project(':aa-service') {
+}
+
