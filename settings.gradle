@@ -1,1 +1,2 @@
-include "aa-service"
+include "event-logger-service"
+include "scheduler-service"

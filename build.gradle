@@ -6,6 +6,8 @@ subprojects {
     }
 }
 
-project(':aa-service') {
+project(':event-logger-service') {
 }
 
+project(':scheduler-service') {
+}
