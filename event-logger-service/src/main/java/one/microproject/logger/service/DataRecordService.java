@@ -14,4 +14,6 @@ public interface DataRecordService {
 
     Flux<DataRecord> get(DataSeriesId id, Long beginTime, Long duration);
 
+    void dropAll(DataSeriesId id);
+
 }

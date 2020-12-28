@@ -1,6 +1,7 @@
 package one.microproject.logger.service;
 
 import com.mongodb.reactivestreams.client.MongoClient;
+import one.microproject.logger.config.MongoConfig;
 import one.microproject.logger.dto.GenericResponse;
 import one.microproject.logger.model.DataRecord;
 import one.microproject.logger.model.DataSeriesId;
@@ -15,9 +16,9 @@ public class DataRecordServiceImpl implements DataRecordService {
     private final MongoClient mongoClient;
 
     @Autowired
-    public DataRecordServiceImpl(MongoClient mongoClient) {
+    public DataRecordServiceImpl(MongoClient mongoClient, MongoConfig mongoConfig) {
         this.mongoClient = mongoClient;
-        this.mongoClient.getDatabase("test");
+        this.mongoClient.getDatabase(mongoConfig.getDatabase());
     }
 
     @Override
@@ -33,6 +34,11 @@ public class DataRecordServiceImpl implements DataRecordService {
     @Override
     public Flux<DataRecord> get(DataSeriesId id, Long beginTime, Long duration) {
         return null;
+    }
+
+    @Override
+    public void dropAll(DataSeriesId id) {
+
     }
 
 }

@@ -15,10 +15,12 @@ import reactor.core.publisher.Mono;
 public class DataSeriesServiceImpl implements DataSeriesService {
 
     private final DataSeriesRepository dataSeriesRepository;
+    private final DataRecordService dataRecordService;
 
     @Autowired
-    public DataSeriesServiceImpl(DataSeriesRepository dataSeriesRepository) {
+    public DataSeriesServiceImpl(DataSeriesRepository dataSeriesRepository, DataRecordService dataRecordService) {
         this.dataSeriesRepository = dataSeriesRepository;
+        this.dataRecordService = dataRecordService;
     }
 
     @Override
@@ -38,6 +40,7 @@ public class DataSeriesServiceImpl implements DataSeriesService {
     @Override
     public Mono<GenericResponse> deleteDataSeries(DataSeriesId id) {
         Mono<Void> deleted = dataSeriesRepository.deleteById(id.toStringId());
+        dataRecordService.dropAll(id);
         return deleted.transform(mono -> mono.map( m -> GenericResponse.ok()));
     }
 

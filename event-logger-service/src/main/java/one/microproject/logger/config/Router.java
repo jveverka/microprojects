@@ -26,7 +26,8 @@ public class Router {
 
     @Bean
     public RouterFunction<ServerResponse> route(SecurityService securityService,
-                                                DataSeriesService dataSeriesService, DataRecordService dataRecordService) {
+                                                DataSeriesService dataSeriesService,
+                                                DataRecordService dataRecordService) {
         return RouterFunctions
                 .route(GET("/services/series").and(accept(APPLICATION_JSON)), request -> {
                     Flux<DataSeriesInfo> dataSeriesInfoFlux = dataSeriesService.getAll();

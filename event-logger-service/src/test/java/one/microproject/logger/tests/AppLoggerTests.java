@@ -23,6 +23,8 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -109,11 +111,18 @@ public class AppLoggerTests {
             mongoDBContainer.start();
             Assertions.assertTrue(mongoDBContainer.isRunning());
             AppLoggerTests.mongoDBContainer = mongoDBContainer;
+            List<Integer> exposedPorts = mongoDBContainer.getExposedPorts();
+            Integer port = exposedPorts.get(0);
+            Integer boundPort = mongoDBContainer.getMappedPort(port);
 
             LOGGER.info("MONGO     : {}", mongoDBContainer.getReplicaSetUrl());
+            LOGGER.info("MONGO     : mongodb://localhost:{}/test", boundPort);
 
             TestPropertyValues.of(
-                    "spring.data.mongodb.uri=" + mongoDBContainer.getReplicaSetUrl()
+                    //"spring.data.mongodb.uri=" + mongoDBContainer.getReplicaSetUrl()
+                    "spring.data.mongodb.host=localhost",
+                    "spring.data.mongodb.port=" + boundPort,
+                    "spring.data.mongodb.database=test"
             ).applyTo(context.getEnvironment());
         }
     }
