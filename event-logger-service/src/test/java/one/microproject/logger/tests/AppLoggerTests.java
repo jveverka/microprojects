@@ -15,6 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.http.HttpStatus;
 import org.springframework.lang.NonNull;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.reactive.server.EntityExchangeResult;
@@ -64,14 +65,25 @@ public class AppLoggerTests {
 
     @Test
     @Order(3)
+    public void testGetDataSeries() {
+        EntityExchangeResult<DataSeriesInfo> entityExchangeResult = webClient.get().uri("/services/series/{groupId}/{name}", "g001", "s001")
+                .header("Authorization", "Bearer: any-token")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(DataSeriesInfo.class).returnResult();
+        assertNotNull(entityExchangeResult.getResponseBody());
+        assertEquals("g001", entityExchangeResult.getResponseBody().getGroupId());
+        assertEquals("s001", entityExchangeResult.getResponseBody().getName());
+    }
+
+    @Test
+    @Order(4)
     public void testDeleteDataSeries() {
         EntityExchangeResult<GenericResponse> entityExchangeResult = webClient.delete().uri("/services/series/{groupId}/{name}", "g001", "s001")
                 .header("Authorization", "Bearer: any-token")
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(GenericResponse.class).returnResult();
-        //assertNotNull(entityExchangeResult.getResponseBody());
-        //assertEquals(Boolean.TRUE, entityExchangeResult.getResponseBody().getOk());
 
         EntityExchangeResult<DataSeriesInfo[]> entityExchangeResultDataSeriesInfo = getDataSeriesInfo();
         assertEquals(0, entityExchangeResultDataSeriesInfo.getResponseBody().length);
@@ -98,7 +110,7 @@ public class AppLoggerTests {
             Assertions.assertTrue(mongoDBContainer.isRunning());
             AppLoggerTests.mongoDBContainer = mongoDBContainer;
 
-            LOGGER.info("MONGO     : {}:{}", mongoDBContainer.getReplicaSetUrl());
+            LOGGER.info("MONGO     : {}", mongoDBContainer.getReplicaSetUrl());
 
             TestPropertyValues.of(
                     "spring.data.mongodb.uri=" + mongoDBContainer.getReplicaSetUrl()

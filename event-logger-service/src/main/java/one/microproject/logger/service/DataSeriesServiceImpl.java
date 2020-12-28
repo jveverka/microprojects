@@ -2,9 +2,9 @@ package one.microproject.logger.service;
 
 import one.microproject.logger.dto.CreateDataSeriesRequest;
 import one.microproject.logger.dto.DataSeriesInfo;
-import one.microproject.logger.dto.DeleteDataSeriesRequest;
 import one.microproject.logger.dto.GenericResponse;
 import one.microproject.logger.model.DataSeries;
+import one.microproject.logger.model.DataSeriesId;
 import one.microproject.logger.repository.DataSeriesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,8 +23,8 @@ public class DataSeriesServiceImpl implements DataSeriesService {
 
     @Override
     public Mono<GenericResponse> createDataSeries(CreateDataSeriesRequest request) {
-        String id = request.getGroupId() + "-" + request.getName();
-        DataSeries dataSeries = new DataSeries(id, request.getGroupId(), request.getName(), request.getDescription());
+        DataSeriesId id = new DataSeriesId(request.getGroupId(), request.getName());
+        DataSeries dataSeries = new DataSeries(id.toStringId(), id.getGroupId(), id.getName(), request.getDescription());
         Mono<DataSeries> saved = dataSeriesRepository.save(dataSeries);
         return saved.transform(mono -> mono.map( m -> GenericResponse.ok()));
     }
@@ -36,10 +36,15 @@ public class DataSeriesServiceImpl implements DataSeriesService {
     }
 
     @Override
-    public Mono<GenericResponse> deleteDataSeries(DeleteDataSeriesRequest request) {
-        String id = request.getGroupId() + "-" + request.getName();
-        Mono<Void> deleted = dataSeriesRepository.deleteById(id);
+    public Mono<GenericResponse> deleteDataSeries(DataSeriesId id) {
+        Mono<Void> deleted = dataSeriesRepository.deleteById(id.toStringId());
         return deleted.transform(mono -> mono.map( m -> GenericResponse.ok()));
+    }
+
+    @Override
+    public Mono<DataSeriesInfo> get(DataSeriesId id) {
+        Mono<DataSeries> found = dataSeriesRepository.findById(id.toStringId());
+        return found.transform(mono -> mono.map( m -> new DataSeriesInfo(m.getGroupId(), m.getName(), m.getDescription())));
     }
 
 }

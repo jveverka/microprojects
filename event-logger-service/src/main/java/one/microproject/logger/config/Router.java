@@ -2,8 +2,8 @@ package one.microproject.logger.config;
 
 import one.microproject.logger.dto.CreateDataSeriesRequest;
 import one.microproject.logger.dto.DataSeriesInfo;
-import one.microproject.logger.dto.DeleteDataSeriesRequest;
 import one.microproject.logger.dto.GenericResponse;
+import one.microproject.logger.model.DataSeriesId;
 import one.microproject.logger.service.DataRecordService;
 import one.microproject.logger.service.DataSeriesService;
 import one.microproject.logger.service.SecurityService;
@@ -38,10 +38,16 @@ public class Router {
                     return ServerResponse.ok().body(genericResponseMono, GenericResponse.class);
                 })
                 .andRoute(DELETE("/services/series/{groupId}/{name}").and(accept(APPLICATION_JSON)), request -> {
-                    DeleteDataSeriesRequest dataSeriesRequest =
-                            new DeleteDataSeriesRequest(request.pathVariable("groupId"), request.pathVariable("name"));
-                    Mono<GenericResponse> genericResponseMono = dataSeriesService.deleteDataSeries(dataSeriesRequest);
+                    DataSeriesId id =
+                            new DataSeriesId(request.pathVariable("groupId"), request.pathVariable("name"));
+                    Mono<GenericResponse> genericResponseMono = dataSeriesService.deleteDataSeries(id);
                     return ServerResponse.ok().body(genericResponseMono, GenericResponse.class);
+                })
+                .andRoute(GET("/services/series/{groupId}/{name}").and(accept(APPLICATION_JSON)), request -> {
+                    DataSeriesId id =
+                            new DataSeriesId(request.pathVariable("groupId"), request.pathVariable("name"));
+                    Mono<DataSeriesInfo> dataSeriesInfoMono = dataSeriesService.get(id);
+                    return ServerResponse.ok().body(dataSeriesInfoMono, DataSeriesInfo.class);
                 })
                 .filter(new SecurityHandlerFilterFunction(securityService));
     }

@@ -1,2 +1,6 @@
 server:
   port: 8090
+spring:
+  data:
+    mongodb:
+      uri: mongo://localhost:27017/test
