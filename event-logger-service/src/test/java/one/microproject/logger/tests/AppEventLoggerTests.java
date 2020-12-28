@@ -15,7 +15,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.http.HttpStatus;
 import org.springframework.lang.NonNull;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.reactive.server.EntityExchangeResult;
@@ -31,8 +30,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @Testcontainers
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@ContextConfiguration(initializers = AppLoggerTests.Initializer.class)
-public class AppLoggerTests {
+@ContextConfiguration(initializers = AppEventLoggerTests.Initializer.class)
+public class AppEventLoggerTests {
 
     protected static final int DOCKER_EXPOSED_MONGO_PORT = 27017;
     private static final String MONGO_DOCKER_IMAGE = "mongo:4.2.9";
@@ -101,7 +100,7 @@ public class AppLoggerTests {
 
     public static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
-        private final Logger LOGGER = LoggerFactory.getLogger(AppLoggerTests.class);
+        private final Logger LOGGER = LoggerFactory.getLogger(AppEventLoggerTests.class);
 
         private static MongoDBContainer mongoDBContainer = new MongoDBContainer(MONGO_DOCKER_IMAGE);
 
@@ -110,7 +109,7 @@ public class AppLoggerTests {
 
             mongoDBContainer.start();
             Assertions.assertTrue(mongoDBContainer.isRunning());
-            AppLoggerTests.mongoDBContainer = mongoDBContainer;
+            AppEventLoggerTests.mongoDBContainer = mongoDBContainer;
             List<Integer> exposedPorts = mongoDBContainer.getExposedPorts();
             Integer port = exposedPorts.get(0);
             Integer boundPort = mongoDBContainer.getMappedPort(port);
