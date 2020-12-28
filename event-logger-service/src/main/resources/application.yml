@@ -6,6 +6,6 @@ spring:
       host: localhost
       port: 27017
       database: loggerdb
-      user: logger-user
-      password: secret
+      #user: loggeruser
+      #password: secret
       #uri: mongo://localhost:27017/test

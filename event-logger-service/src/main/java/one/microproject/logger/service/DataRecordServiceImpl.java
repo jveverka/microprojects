@@ -1,6 +1,7 @@
 package one.microproject.logger.service;
 
 import com.mongodb.reactivestreams.client.MongoClient;
+import com.mongodb.reactivestreams.client.MongoDatabase;
 import one.microproject.logger.config.MongoConfig;
 import one.microproject.logger.dto.GenericResponse;
 import one.microproject.logger.model.DataRecord;
@@ -13,21 +14,22 @@ import reactor.core.publisher.Mono;
 @Service
 public class DataRecordServiceImpl implements DataRecordService {
 
-    private final MongoClient mongoClient;
+    private final MongoDatabase mongoDatabase;
 
     @Autowired
     public DataRecordServiceImpl(MongoClient mongoClient, MongoConfig mongoConfig) {
-        this.mongoClient = mongoClient;
-        this.mongoClient.getDatabase(mongoConfig.getDatabase());
+        this.mongoDatabase = mongoClient.getDatabase(mongoConfig.getDatabase());
     }
 
     @Override
     public Mono<GenericResponse> save(DataSeriesId id, DataRecord record) {
+        //mongoDatabase.getCollection(id.getName()).insertOne();
         return null;
     }
 
     @Override
     public Flux<DataRecord> getAll(DataSeriesId id) {
+        mongoDatabase.getCollection(id.getName()).find();
         return null;
     }
 
@@ -38,7 +40,7 @@ public class DataRecordServiceImpl implements DataRecordService {
 
     @Override
     public void dropAll(DataSeriesId id) {
-
+        mongoDatabase.getCollection(id.getName()).drop();
     }
 
 }
