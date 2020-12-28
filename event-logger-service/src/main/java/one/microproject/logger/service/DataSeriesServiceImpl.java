@@ -26,24 +26,20 @@ public class DataSeriesServiceImpl implements DataSeriesService {
         String id = request.getGroupId() + "-" + request.getName();
         DataSeries dataSeries = new DataSeries(id, request.getGroupId(), request.getName(), request.getDescription());
         Mono<DataSeries> saved = dataSeriesRepository.save(dataSeries);
-        return saved.transform(mono -> { return mono.map( m -> { return GenericResponse.ok(); }); });
+        return saved.transform(mono -> mono.map( m -> GenericResponse.ok()));
     }
 
     @Override
     public Flux<DataSeriesInfo> getAll() {
         Flux<DataSeries> dataSeriesFlux = dataSeriesRepository.findAll();
-        return dataSeriesFlux.transform(flux -> {
-            return flux.map( f ->  {
-                return new DataSeriesInfo(f.getGroupId(), f.getName(), f.getName());
-            });
-        });
+        return dataSeriesFlux.transform(flux -> flux.map( f ->  new DataSeriesInfo(f.getGroupId(), f.getName(), f.getName())));
     }
 
     @Override
     public Mono<GenericResponse> deleteDataSeries(DeleteDataSeriesRequest request) {
         String id = request.getGroupId() + "-" + request.getName();
         Mono<Void> deleted = dataSeriesRepository.deleteById(id);
-        return deleted.transform(mono -> { return mono.map( m -> { return GenericResponse.ok(); }); });
+        return deleted.transform(mono -> mono.map( m -> GenericResponse.ok()));
     }
 
 }
