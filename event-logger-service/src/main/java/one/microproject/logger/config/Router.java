@@ -1,8 +1,11 @@
 package one.microproject.logger.config;
 
+import one.microproject.logger.dto.CreateDataRecord;
 import one.microproject.logger.dto.CreateDataSeriesRequest;
 import one.microproject.logger.dto.DataSeriesInfo;
 import one.microproject.logger.dto.GenericResponse;
+import one.microproject.logger.dto.InsertDataRecord;
+import one.microproject.logger.model.DataRecord;
 import one.microproject.logger.model.DataSeriesId;
 import one.microproject.logger.service.DataRecordService;
 import one.microproject.logger.service.DataSeriesService;
@@ -18,6 +21,7 @@ import reactor.core.publisher.Mono;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.web.reactive.function.server.RequestPredicates.DELETE;
 import static org.springframework.web.reactive.function.server.RequestPredicates.GET;
+import static org.springframework.web.reactive.function.server.RequestPredicates.PUT;
 import static org.springframework.web.reactive.function.server.RequestPredicates.POST;
 import static org.springframework.web.reactive.function.server.RequestPredicates.accept;
 
@@ -49,6 +53,22 @@ public class Router {
                             new DataSeriesId(request.pathVariable("groupId"), request.pathVariable("name"));
                     Mono<DataSeriesInfo> dataSeriesInfoMono = dataSeriesService.get(id);
                     return ServerResponse.ok().body(dataSeriesInfoMono, DataSeriesInfo.class);
+                })
+                .andRoute(GET("/services/records/{groupId}/{name}").and(accept(APPLICATION_JSON)), request -> {
+                    DataSeriesId id =
+                            new DataSeriesId(request.pathVariable("groupId"), request.pathVariable("name"));
+                    Flux<DataRecord> dataRecordFlux = dataRecordService.getAll(id);
+                    return ServerResponse.ok().body(dataRecordFlux, DataRecord.class);
+                })
+                .andRoute(POST("/services/records").and(accept(APPLICATION_JSON)), request -> {
+                    Mono<CreateDataRecord> monoBody = request.bodyToMono(CreateDataRecord.class);
+                    Mono<GenericResponse> genericResponseMono = monoBody.flatMap(dataRecordService::save);
+                    return ServerResponse.ok().body(genericResponseMono, GenericResponse.class);
+                })
+                .andRoute(PUT("/services/records").and(accept(APPLICATION_JSON)), request -> {
+                    Mono<InsertDataRecord> monoBody = request.bodyToMono(InsertDataRecord.class);
+                    Mono<GenericResponse> genericResponseMono = monoBody.flatMap(dataRecordService::save);
+                    return ServerResponse.ok().body(genericResponseMono, GenericResponse.class);
                 })
                 .filter(new SecurityHandlerFilterFunction(securityService));
     }
