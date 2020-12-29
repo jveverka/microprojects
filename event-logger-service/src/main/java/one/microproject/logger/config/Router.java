@@ -33,6 +33,7 @@ public class Router {
                                                 DataSeriesService dataSeriesService,
                                                 DataRecordService dataRecordService) {
         return RouterFunctions
+                //Data Series - APIs
                 .route(GET("/services/series").and(accept(APPLICATION_JSON)), request -> {
                     Flux<DataSeriesInfo> dataSeriesInfoFlux = dataSeriesService.getAll();
                     return ServerResponse.ok().body(dataSeriesInfoFlux, DataSeriesInfo.class);
@@ -54,6 +55,7 @@ public class Router {
                     Mono<DataSeriesInfo> dataSeriesInfoMono = dataSeriesService.get(id);
                     return ServerResponse.ok().body(dataSeriesInfoMono, DataSeriesInfo.class);
                 })
+                // Data Records - APIs
                 .andRoute(GET("/services/records/{groupId}/{name}").and(accept(APPLICATION_JSON)), request -> {
                     DataSeriesId id =
                             new DataSeriesId(request.pathVariable("groupId"), request.pathVariable("name"));

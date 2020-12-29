@@ -15,10 +15,11 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class DataRecordTests {
 
+    private static ObjectMapper mapper = new ObjectMapper();
+
     @Test
     public void testDataRecordSerialization() throws JsonProcessingException {
         DataWrapper dataWrapper = new DataWrapper(120, true, "example", DataWrapper.getInstance());
-        ObjectMapper mapper = new ObjectMapper();
         JsonNode jsonNode = mapper.valueToTree(dataWrapper);
         DataRecord dataRecord = new DataRecord("01", 3600L, jsonNode);
         String data = mapper.writeValueAsString(dataRecord);
@@ -37,8 +38,7 @@ public class DataRecordTests {
 
     @Test
     public void recordToDocumentTests() throws JsonProcessingException {
-        DataWrapper dataWrapper = new DataWrapper(120, true, "example", null);
-        ObjectMapper mapper = new ObjectMapper();
+        DataWrapper dataWrapper = new DataWrapper(120, true, "example", DataWrapper.getInstance());
         JsonNode jsonNode = mapper.valueToTree(dataWrapper);
         DataRecord dataRecord = new DataRecord("01", 3600L, jsonNode);
 

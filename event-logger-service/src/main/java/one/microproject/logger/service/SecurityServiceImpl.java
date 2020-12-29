@@ -11,7 +11,7 @@ public class SecurityServiceImpl implements SecurityService {
 
     @Override
     public boolean validate(String authorization) {
-        LOG.info("authorization: {}",  authorization);
+        LOG.debug("authorization: {}",  authorization);
         return true;
     }
 

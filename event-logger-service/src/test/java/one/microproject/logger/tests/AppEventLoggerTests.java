@@ -1,8 +1,13 @@
 package one.microproject.logger.tests;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import one.microproject.logger.dto.CreateDataSeriesRequest;
 import one.microproject.logger.dto.DataSeriesInfo;
 import one.microproject.logger.dto.GenericResponse;
+import one.microproject.logger.dto.InsertDataRecord;
+import one.microproject.logger.model.DataRecord;
+import one.microproject.logger.tests.testdto.DataWrapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -33,9 +38,13 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @ContextConfiguration(initializers = AppEventLoggerTests.Initializer.class)
 public class AppEventLoggerTests {
 
-    protected static final int DOCKER_EXPOSED_MONGO_PORT = 27017;
+    private static final int DOCKER_EXPOSED_MONGO_PORT = 27017;
     private static final String MONGO_DOCKER_IMAGE = "mongo:4.2.9";
-    protected static MongoDBContainer mongoDBContainer;
+    private static MongoDBContainer mongoDBContainer;
+    private static String accessToken = "access_token";
+
+    @Autowired
+    private ObjectMapper mapper;
 
     @Autowired
     private WebTestClient webClient;
@@ -53,7 +62,7 @@ public class AppEventLoggerTests {
         CreateDataSeriesRequest createDataSeriesRequest = new CreateDataSeriesRequest("g001", "s001", "d");
         EntityExchangeResult<GenericResponse> entityExchangeResult = webClient.post().uri("/services/series")
                 .bodyValue(createDataSeriesRequest)
-                .header("Authorization", "Bearer: any-token")
+                .header("Authorization", "Bearer: " + accessToken)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(GenericResponse.class).returnResult();
@@ -68,7 +77,7 @@ public class AppEventLoggerTests {
     @Order(3)
     public void testGetDataSeries() {
         EntityExchangeResult<DataSeriesInfo> entityExchangeResult = webClient.get().uri("/services/series/{groupId}/{name}", "g001", "s001")
-                .header("Authorization", "Bearer: any-token")
+                .header("Authorization", "Bearer: " + accessToken)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(DataSeriesInfo.class).returnResult();
@@ -79,9 +88,38 @@ public class AppEventLoggerTests {
 
     @Test
     @Order(4)
+    public void testInsertDataRecords() {
+        DataWrapper dataWrapper = new DataWrapper(120, true, "example", DataWrapper.getInstance());
+        JsonNode jsonNode = mapper.valueToTree(dataWrapper);
+        InsertDataRecord insertDataRecord = new InsertDataRecord(1609459190L, "g001", "s001", jsonNode);
+        EntityExchangeResult<GenericResponse> entityExchangeResult = webClient.put().uri("/services/records")
+                .bodyValue(insertDataRecord)
+                .header("Authorization", "Bearer: " + accessToken)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(GenericResponse.class).returnResult();
+        assertNotNull(entityExchangeResult.getResponseBody());
+        assertEquals(Boolean.TRUE, entityExchangeResult.getResponseBody().getOk());
+    }
+
+    @Test
+    @Order(5)
+    public void testGetDataRecords() {
+        EntityExchangeResult<DataRecord[]> entityExchangeResult = webClient.get().uri("/services/records/{groupId}/{name}", "g001", "s001")
+                .header("Authorization", "Bearer: " + accessToken)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(DataRecord[].class).returnResult();
+
+        assertNotNull(entityExchangeResult.getResponseBody());
+        assertEquals(1, entityExchangeResult.getResponseBody().length);
+    }
+
+    @Test
+    @Order(80)
     public void testDeleteDataSeries() {
         EntityExchangeResult<GenericResponse> entityExchangeResult = webClient.delete().uri("/services/series/{groupId}/{name}", "g001", "s001")
-                .header("Authorization", "Bearer: any-token")
+                .header("Authorization", "Bearer: " + accessToken)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(GenericResponse.class).returnResult();
@@ -92,7 +130,7 @@ public class AppEventLoggerTests {
 
     private EntityExchangeResult<DataSeriesInfo[]> getDataSeriesInfo() {
         return webClient.get().uri("/services/series")
-                .header("Authorization", "Bearer: any-token")
+                .header("Authorization", "Bearer: " + accessToken)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(DataSeriesInfo[].class).returnResult();
