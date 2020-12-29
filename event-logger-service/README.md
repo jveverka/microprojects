@@ -16,3 +16,16 @@ java -jar build/libs/event-logger-service-0.0.1-SNAPSHOT.jar
 docker-compose up -d
 docker-compose down -v --rmi all --remove-orphans
 ```
+
+### Create docker image
+```
+docker build -t jurajveverka/event-logger:0.0.1-SNAPSHOT --file Dockerfile .
+
+docker run --name event-logger:0.0.1-SNAPSHOT \
+      --restart unless-stopped \
+      -e APP_CONFIG_PATH=/opt/data/application.yml \
+      -e XMX=128m \
+      -v 'pwd':/opt/data \
+      -d -p 8090:8090 jurajveverka/event-logger:0.0.1-SNAPSHOT
+```
+
