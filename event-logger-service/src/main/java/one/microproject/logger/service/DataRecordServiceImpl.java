@@ -25,6 +25,8 @@ import java.time.Instant;
 import java.util.UUID;
 
 import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Filters.lt;
+import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.gte;
 import static one.microproject.logger.service.DataMapper.toDataRecord;
 import static one.microproject.logger.service.DataMapper.toDocument;
@@ -77,8 +79,11 @@ public class DataRecordServiceImpl implements DataRecordService {
     @Override
     public Flux<DataRecord> get(DataSeriesId id, Long beginTime, Long duration) {
         LOG.info("get: {}:{}:{}", id.toStringId(), beginTime, duration);
-        //mongoDatabase.getCollection(id.getName()).find(gte("timeStamp", beginTime).and().lt());
-        return null;
+        Long endTime = beginTime + duration;
+        FindPublisher<Document> publisher = mongoDatabase.getCollection(id.getName())
+                .find(and(gte("timeStamp", beginTime), lt("timeStamp",  endTime)));
+        Flux<Document> fluxDocument = Flux.from(publisher);
+        return fluxDocument.transform( flux -> flux.map( d -> toDataRecord(mapper, d) ) );
     }
 
     @Override

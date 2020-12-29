@@ -62,6 +62,14 @@ public class Router {
                     Flux<DataRecord> dataRecordFlux = dataRecordService.getAll(id);
                     return ServerResponse.ok().body(dataRecordFlux, DataRecord.class);
                 })
+                .andRoute(GET("/services/records/{groupId}/{name}/{startTime}/{duration}").and(accept(APPLICATION_JSON)), request -> {
+                    DataSeriesId id =
+                            new DataSeriesId(request.pathVariable("groupId"), request.pathVariable("name"));
+                    Long startTime = Long.parseLong(request.pathVariable("startTime"));
+                    Long duration = Long.parseLong(request.pathVariable("duration"));
+                    Flux<DataRecord> dataRecordFlux = dataRecordService.get(id, startTime, duration);
+                    return ServerResponse.ok().body(dataRecordFlux, DataRecord.class);
+                })
                 .andRoute(POST("/services/records").and(accept(APPLICATION_JSON)), request -> {
                     Mono<CreateDataRecord> monoBody = request.bodyToMono(CreateDataRecord.class);
                     Mono<GenericResponse> genericResponseMono = monoBody.flatMap(dataRecordService::save);
