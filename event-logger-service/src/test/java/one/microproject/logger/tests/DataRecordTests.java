@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import one.microproject.logger.model.DataRecord;
-import one.microproject.logger.service.DataRecordServiceImpl;
+import one.microproject.logger.service.DataMapper;
 import one.microproject.logger.tests.testdto.DataWrapper;
 import org.bson.Document;
 import org.junit.jupiter.api.Test;
@@ -42,8 +42,8 @@ public class DataRecordTests {
         JsonNode jsonNode = mapper.valueToTree(dataWrapper);
         DataRecord dataRecord = new DataRecord("01", 3600L, jsonNode);
 
-        Document document = DataRecordServiceImpl.toDocument(dataRecord);
-        DataRecord deserializedRecord = DataRecordServiceImpl.toDataRecord(document);
+        Document document = DataMapper.toDocument(mapper, dataRecord);
+        DataRecord deserializedRecord = DataMapper.toDataRecord(mapper, document);
 
         assertEquals(dataRecord.getId(), deserializedRecord.getId());
         assertEquals(dataRecord.getTimeStamp(), deserializedRecord.getTimeStamp());

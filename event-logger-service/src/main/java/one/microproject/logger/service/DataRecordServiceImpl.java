@@ -1,6 +1,5 @@
 package one.microproject.logger.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.client.result.InsertOneResult;
 import com.mongodb.reactivestreams.client.FindPublisher;
@@ -21,9 +20,11 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.io.IOException;
 import java.time.Instant;
 import java.util.UUID;
+
+import static one.microproject.logger.service.DataMapper.toDataRecord;
+import static one.microproject.logger.service.DataMapper.toDocument;
 
 @Service
 public class DataRecordServiceImpl implements DataRecordService {
@@ -31,10 +32,12 @@ public class DataRecordServiceImpl implements DataRecordService {
     private static final Logger LOG = LoggerFactory.getLogger(DataRecordServiceImpl.class);
 
     private final MongoDatabase mongoDatabase;
+    private final ObjectMapper mapper;
 
     @Autowired
-    public DataRecordServiceImpl(MongoClient mongoClient, MongoConfig mongoConfig) {
+    public DataRecordServiceImpl(MongoClient mongoClient, MongoConfig mongoConfig, ObjectMapper mapper) {
         this.mongoDatabase = mongoClient.getDatabase(mongoConfig.getDatabase());
+        this.mapper = mapper;
     }
 
     @Override
@@ -55,7 +58,7 @@ public class DataRecordServiceImpl implements DataRecordService {
 
     @Override
     public Mono<GenericResponse> save(DataSeriesId id, DataRecord record) {
-        Publisher<InsertOneResult> insertOneResultPublisher = mongoDatabase.getCollection(id.getName()).insertOne(toDocument(record));
+        Publisher<InsertOneResult> insertOneResultPublisher = mongoDatabase.getCollection(id.getName()).insertOne(toDocument(mapper, record));
         Mono<InsertOneResult> insertOneResultMono =  Mono.from(insertOneResultPublisher);
         return insertOneResultMono.transform( mono -> mono.map( i -> GenericResponse.ok() ) );
     }
@@ -65,7 +68,7 @@ public class DataRecordServiceImpl implements DataRecordService {
         LOG.info("getAll");
         FindPublisher<Document> publisher = mongoDatabase.getCollection(id.getName()).find();
         Flux<Document> fluxDocument = Flux.from(publisher);
-        return fluxDocument.transform( flux -> flux.map( d -> toDataRecord(d) ) );
+        return fluxDocument.transform( flux -> flux.map( d -> toDataRecord(mapper, d) ) );
     }
 
     @Override
@@ -84,35 +87,6 @@ public class DataRecordServiceImpl implements DataRecordService {
     public void dropAll(DataSeriesId id) {
         LOG.info("dropAll: {}", id.toStringId());
         mongoDatabase.getCollection(id.getName()).drop();
-    }
-
-    public static Document toDocument(DataRecord record) {
-        ObjectMapper mapper = new ObjectMapper();
-        Document document = new Document();
-        document.append("_id", record.getId());
-        document.append("timeStamp", record.getTimeStamp());
-        try {
-            String jsonData = mapper.writeValueAsString(record.getPayload());
-            Document payload = Document.parse(jsonData);
-            document.append("payload", payload);
-        } catch (IOException e) {
-            LOG.error("Error: ", e);
-        }
-        return document;
-    }
-
-    public static DataRecord toDataRecord(Document document) {
-        ObjectMapper mapper = new ObjectMapper();
-        String id = document.get("_id", String.class);
-        Long timeStamp = document.get("timeStamp", Long.class);
-        try {
-            Document payloadDocument = document.get("payload", Document.class);
-            JsonNode payload = mapper.readTree(payloadDocument.toJson());
-            return new DataRecord(id, timeStamp, payload);
-        } catch (IOException e) {
-            LOG.error("Error: ", e);
-            return new DataRecord(id, timeStamp, null);
-        }
     }
 
 }
