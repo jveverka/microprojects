@@ -28,6 +28,7 @@ import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Filters.lt;
 import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.gte;
+import static one.microproject.logger.service.DataMapper.TIME_STAMP;
 import static one.microproject.logger.service.DataMapper.toDataRecord;
 import static one.microproject.logger.service.DataMapper.toDocument;
 
@@ -81,7 +82,7 @@ public class DataRecordServiceImpl implements DataRecordService {
         LOG.info("get: {}:{}:{}", id.toStringId(), beginTime, duration);
         Long endTime = beginTime + duration;
         FindPublisher<Document> publisher = mongoDatabase.getCollection(id.getName())
-                .find(and(gte("timeStamp", beginTime), lt("timeStamp",  endTime)));
+                .find(and(gte(TIME_STAMP, beginTime), lt(TIME_STAMP,  endTime)));
         Flux<Document> fluxDocument = Flux.from(publisher);
         return fluxDocument.transform( flux -> flux.map( d -> toDataRecord(mapper, d) ) );
     }
@@ -89,7 +90,7 @@ public class DataRecordServiceImpl implements DataRecordService {
     @Override
     public Mono<GenericResponse> delete(DataSeriesId id, Long timeStamp) {
         LOG.info("delete: {}:{}", id.toStringId(), timeStamp);
-        Publisher<DeleteResult> deleteOne = mongoDatabase.getCollection(id.getName()).deleteOne(eq("timeStamp", timeStamp));
+        Publisher<DeleteResult> deleteOne = mongoDatabase.getCollection(id.getName()).deleteOne(eq(TIME_STAMP, timeStamp));
         Mono<DeleteResult> deleteResultMono =  Mono.from(deleteOne);
         return deleteResultMono.transform( mono -> mono.map( i -> GenericResponse.ok() ) );
     }

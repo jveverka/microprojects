@@ -13,14 +13,21 @@ public class DataMapper {
 
     private static final Logger LOG = LoggerFactory.getLogger(DataMapper.class);
 
+    private DataMapper() {
+    }
+
+    public static final String ID = "_id";
+    public static final String TIME_STAMP = "timeStamp";
+    public static final String PAYLOAD = "payload";
+
     public static Document toDocument(ObjectMapper mapper, DataRecord record) {
         Document document = new Document();
-        document.append("_id", record.getId());
-        document.append("timeStamp", record.getTimeStamp());
+        document.append(ID, record.getId());
+        document.append(TIME_STAMP, record.getTimeStamp());
         try {
             String jsonData = mapper.writeValueAsString(record.getPayload());
             Document payload = Document.parse(jsonData);
-            document.append("payload", payload);
+            document.append(PAYLOAD, payload);
         } catch (IOException e) {
             LOG.error("Error: ", e);
         }
@@ -28,10 +35,10 @@ public class DataMapper {
     }
 
     public static DataRecord toDataRecord(ObjectMapper mapper, Document document) {
-        String id = document.get("_id", String.class);
-        Long timeStamp = document.get("timeStamp", Long.class);
+        String id = document.get(ID, String.class);
+        Long timeStamp = document.get(TIME_STAMP, Long.class);
         try {
-            Document payloadDocument = document.get("payload", Document.class);
+            Document payloadDocument = document.get(PAYLOAD, Document.class);
             JsonNode payload = mapper.readTree(payloadDocument.toJson());
             return new DataRecord(id, timeStamp, payload);
         } catch (IOException e) {
