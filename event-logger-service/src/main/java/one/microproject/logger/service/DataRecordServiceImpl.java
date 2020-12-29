@@ -75,6 +75,12 @@ public class DataRecordServiceImpl implements DataRecordService {
     }
 
     @Override
+    public Mono<GenericResponse> delete(DataSeriesId id, Long timeStamp) {
+        LOG.info("delete: {}:{}", id.toStringId(), timeStamp);
+        return null;
+    }
+
+    @Override
     public void dropAll(DataSeriesId id) {
         LOG.info("dropAll: {}", id.toStringId());
         mongoDatabase.getCollection(id.getName()).drop();

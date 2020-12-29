@@ -20,6 +20,8 @@ public interface DataRecordService {
 
     Flux<DataRecord> get(DataSeriesId id, Long beginTime, Long duration);
 
+    Mono<GenericResponse> delete(DataSeriesId id, Long timeStamp);
+
     void dropAll(DataSeriesId id);
 
 }

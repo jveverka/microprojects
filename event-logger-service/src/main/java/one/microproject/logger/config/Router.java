@@ -70,6 +70,13 @@ public class Router {
                     Mono<GenericResponse> genericResponseMono = monoBody.flatMap(dataRecordService::save);
                     return ServerResponse.ok().body(genericResponseMono, GenericResponse.class);
                 })
+                .andRoute(DELETE("/services/records/{groupId}/{name}/{timeStamp}").and(accept(APPLICATION_JSON)), request -> {
+                    DataSeriesId id =
+                            new DataSeriesId(request.pathVariable("groupId"), request.pathVariable("name"));
+                    Long timeStamp = Long.parseLong(request.pathVariable("timeStamp"));
+                    Mono<GenericResponse> genericResponseMono = dataRecordService.delete(id, timeStamp);
+                    return ServerResponse.ok().body(genericResponseMono, GenericResponse.class);
+                })
                 .filter(new SecurityHandlerFilterFunction(securityService));
     }
 
