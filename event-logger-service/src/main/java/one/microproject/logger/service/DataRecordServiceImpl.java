@@ -1,6 +1,7 @@
 package one.microproject.logger.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.InsertOneResult;
 import com.mongodb.reactivestreams.client.FindPublisher;
 import com.mongodb.reactivestreams.client.MongoClient;
@@ -23,6 +24,8 @@ import reactor.core.publisher.Mono;
 import java.time.Instant;
 import java.util.UUID;
 
+import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Filters.gte;
 import static one.microproject.logger.service.DataMapper.toDataRecord;
 import static one.microproject.logger.service.DataMapper.toDocument;
 
@@ -74,13 +77,16 @@ public class DataRecordServiceImpl implements DataRecordService {
     @Override
     public Flux<DataRecord> get(DataSeriesId id, Long beginTime, Long duration) {
         LOG.info("get: {}:{}:{}", id.toStringId(), beginTime, duration);
+        //mongoDatabase.getCollection(id.getName()).find(gte("timeStamp", beginTime).and().lt());
         return null;
     }
 
     @Override
     public Mono<GenericResponse> delete(DataSeriesId id, Long timeStamp) {
         LOG.info("delete: {}:{}", id.toStringId(), timeStamp);
-        return null;
+        Publisher<DeleteResult> deleteOne = mongoDatabase.getCollection(id.getName()).deleteOne(eq("timeStamp", timeStamp));
+        Mono<DeleteResult> deleteResultMono =  Mono.from(deleteOne);
+        return deleteResultMono.transform( mono -> mono.map( i -> GenericResponse.ok() ) );
     }
 
     @Override
