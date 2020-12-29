@@ -1,4 +1,5 @@
 # Event Logger Service
+This project is __WIP__ !
 
 * Logs DataRecord(s) for DataSeries.
 * Provides event history and statistics.
