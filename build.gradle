@@ -11,3 +11,6 @@ project(':event-logger-service') {
 
 project(':scheduler-service') {
 }
+
+project(':test-artefact') {
+}

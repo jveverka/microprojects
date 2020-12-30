@@ -1,0 +1,14 @@
+plugins {
+    id 'java'
+}
+
+group = 'one.microproject.test'
+version = '1.0.0-SNAPSHOT'
+sourceCompatibility = '11'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+}

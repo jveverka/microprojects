@@ -1,2 +1,3 @@
 include "event-logger-service"
 include "scheduler-service"
+include "test-artefact"
