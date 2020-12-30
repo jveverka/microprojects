@@ -2,7 +2,8 @@
 
 ## Account setup
 * create account at [https://issues.sonatype.org](https://issues.sonatype.org/secure/Dashboard.jspa)
-* create GPGkey
+* register groupId (org.microproject), get __ossrhUsername__ and __ossrhPassword__
+* create GPG key
   ```
   gpg --gen-key
   gpg --list-keys  
@@ -26,6 +27,7 @@ gradle clean build test
 gradle publish
 gradle publishToMavenLocal
 ```
+[published artefact](https://oss.sonatype.org/content/repositories/snapshots/one/microproject/test-artefact/1.0.0-SNAPSHOT/maven-metadata.xml)
 
 ## References
 * [Publish into the Central repository](https://central.sonatype.org/pages/producers.html)
