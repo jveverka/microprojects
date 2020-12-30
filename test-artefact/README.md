@@ -49,6 +49,18 @@ gradle publishToMavenLocal
 </project>
 ```
 
+## Consume Artefact in gradle
+```
+dependencies {
+  implementation 'one.microproject.test:test-artefact:1.0.1-SNAPSHOT' 
+}
+repositories {
+    maven {
+        url "https://oss.sonatype.org/content/repositories/snapshots"
+    }
+}
+```
+
 ## References
 * [Publish into the Central repository](https://central.sonatype.org/pages/producers.html)
 * [Gradle Signing Plugin](https://docs.gradle.org/current/userguide/signing_plugin.html)
