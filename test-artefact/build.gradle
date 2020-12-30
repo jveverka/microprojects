@@ -1,9 +1,12 @@
 plugins {
     id 'java'
+    id 'maven-publish'
+    id 'signing'
 }
 
 group = 'one.microproject.test'
 version = '1.0.0-SNAPSHOT'
+archivesBaseName  = 'test-artefact'
 sourceCompatibility = '11'
 
 repositories {
@@ -11,4 +14,57 @@ repositories {
 }
 
 dependencies {
+}
+
+task sourceJar(type: Jar) {
+    classifier "sources"
+    from sourceSets.main.allJava
+}
+
+artifacts {
+    archives jar
+    archives sourceJar
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            pom {
+                name = 'microproject.one test artefact'
+                description = 'A project used as an example on how to set up pushing its components to the Central Repository.'
+                url = 'https://github.com/jveverka/microproject'
+                //properties = [
+                //        myProp: "value",
+                //        "prop.with.dots": "anotherValue"
+                //]
+                licenses {
+                    license {
+                        name = 'MIT License'
+                        url = 'https://github.com/jveverka/microproject/blob/master/LICENSE'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'jveverka'
+                        name = 'Juraj Veverka'
+                        email = 'gergej123@gmail.com'
+                    }
+                }
+                scm {
+                    connection = 'scm:git:https://github.com/jveverka/microproject.git'
+                    developerConnection = 'scm:git:https://github.com/jveverka/microproject.git'
+                    url = 'https://github.com/jveverka/microproject.git'
+                }
+            }
+        }
+    }
+    repositories {
+        maven {
+            url "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+            credentials {
+                username ossrhUsername
+                password ossrhPassword
+            }
+        }
+    }
 }
