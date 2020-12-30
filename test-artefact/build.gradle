@@ -4,9 +4,9 @@ plugins {
     id 'signing'
 }
 
-group = 'one.microproject'
-//group = 'one.microproject.test'
-version = '1.0.0-SNAPSHOT'
+//group = 'one.microproject'
+group = 'one.microproject.test'
+version = '1.0.1-SNAPSHOT'
 sourceCompatibility = '11'
 
 repositories {
@@ -30,9 +30,10 @@ publishing {
     publications {
         mavenJava(MavenPublication) {
 
-            groupId = 'one.microproject'
+            //groupId = 'one.microproject'
+            groupId = 'one.microproject.test'
             artifactId = 'test-artefact'
-            version = '1.0.0-SNAPSHOT'
+            version = '1.0.1-SNAPSHOT'
 
             from components.java
 

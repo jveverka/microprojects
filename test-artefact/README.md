@@ -27,7 +27,27 @@ gradle clean build test
 gradle publish
 gradle publishToMavenLocal
 ```
-[published artefact](https://oss.sonatype.org/content/repositories/snapshots/one/microproject/test-artefact/1.0.0-SNAPSHOT/maven-metadata.xml)
+[published artefact](https://oss.sonatype.org/content/repositories/snapshots/one/microproject/test-artefact/1.0.1-SNAPSHOT/maven-metadata.xml)
+
+## Consume Artefact in maven
+```
+<project>
+    ...
+    <dependencies>
+        <dependency>
+            <groupId>one.microproject.test</groupId>
+            <artifactId>test-artefact</artifactId>
+            <version>1.0.1-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
+    <repositories>
+        <repository>
+            <id>sonatype-snapshot</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </repository>
+    </repositories>
+</project>
+```
 
 ## References
 * [Publish into the Central repository](https://central.sonatype.org/pages/producers.html)

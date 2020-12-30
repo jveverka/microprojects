@@ -5,7 +5,7 @@ public class TestUtils {
     private TestUtils() {
     }
 
-    private String getMessage() {
+    public static String getMessage() {
         return "hello world !";
     }
 
