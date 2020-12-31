@@ -4,9 +4,8 @@ plugins {
     id 'signing'
 }
 
-//group = 'one.microproject'
 group = 'one.microproject.test'
-version = '1.0.1-SNAPSHOT'
+version = '1.0.2-SNAPSHOT'
 sourceCompatibility = '11'
 
 repositories {
@@ -14,6 +13,9 @@ repositories {
 }
 
 dependencies {
+    implementation 'org.slf4j:slf4j-api:1.7.30'
+    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+    testImplementation 'org.slf4j:slf4j-simple:1.7.30'
 }
 
 task sourceJar(type: Jar) {
@@ -30,10 +32,9 @@ publishing {
     publications {
         mavenJava(MavenPublication) {
 
-            //groupId = 'one.microproject'
             groupId = 'one.microproject.test'
             artifactId = 'test-artefact'
-            version = '1.0.1-SNAPSHOT'
+            version = '1.0.2-SNAPSHOT'
 
             from components.java
 
@@ -41,10 +42,6 @@ publishing {
                 name = 'microproject.one test artefact'
                 description = 'A project used as an example on how to set up pushing its components to the Central Repository.'
                 url = 'https://github.com/jveverka/microproject'
-                //properties = [
-                //        myProp: "value",
-                //        "prop.with.dots": "anotherValue"
-                //]
                 licenses {
                     license {
                         name = 'MIT License'
@@ -160,5 +157,12 @@ model {
     }
     tasks.publishMavenJavaPublicationToMavenRepository {
         dependsOn project.tasks.signArchives
+    }
+}
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
     }
 }
