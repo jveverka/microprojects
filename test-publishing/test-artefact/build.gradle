@@ -6,6 +6,7 @@ plugins {
 
 group = 'one.microproject.test'
 version = '1.0.4-SNAPSHOT'
+//version = '1.0.5'
 sourceCompatibility = '11'
 
 repositories {
@@ -41,6 +42,7 @@ publishing {
             groupId = 'one.microproject.test'
             artifactId = 'test-artefact'
             version = '1.0.4-SNAPSHOT'
+            //version = '1.0.5'
 
             from components.java
             artifact(sourceJar) {
