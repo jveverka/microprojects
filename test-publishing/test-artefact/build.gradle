@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'one.microproject.test'
-version = '1.0.2-SNAPSHOT'
+version = '1.0.3-SNAPSHOT'
 sourceCompatibility = '11'
 
 repositories {
@@ -23,9 +23,15 @@ task sourceJar(type: Jar) {
     from sourceSets.main.allJava
 }
 
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier "javadoc"
+    from javadoc.destinationDir
+}
+
 artifacts {
     archives jar
     archives sourceJar
+    archives javadocJar
 }
 
 publishing {
@@ -34,9 +40,15 @@ publishing {
 
             groupId = 'one.microproject.test'
             artifactId = 'test-artefact'
-            version = '1.0.2-SNAPSHOT'
+            version = '1.0.3-SNAPSHOT'
 
             from components.java
+            artifact(sourceJar) {
+                classifier = 'sources'
+            }
+            artifact(javadocJar) {
+                classifier = 'javadoc'
+            }
 
             pom {
                 name = 'microproject.one test artefact'
