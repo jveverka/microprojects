@@ -27,7 +27,7 @@ gradle clean build test
 gradle publish
 gradle publishToMavenLocal
 ```
-[published artefact](https://oss.sonatype.org/content/repositories/snapshots/one/microproject/test-artefact/1.0.1-SNAPSHOT/maven-metadata.xml)
+[published artefact](https://oss.sonatype.org/content/repositories/snapshots/one/microproject/test/test-artefact/1.0.3-SNAPSHOT/maven-metadata.xml)
 
 ## Consume Artefact in maven
 ```
