@@ -6,7 +6,8 @@ you will have to register your own group ID.
 ## 1. Sonatype account setup
 * Sonatype account setup is done only once per group ID.
 * Create account at [https://issues.sonatype.org](https://issues.sonatype.org/secure/Dashboard.jspa),
-  Register groupId (org.microproject), get __ossrhUsername__ and __ossrhPassword__ - OSSRH credentials.
+  Register groupId (org.microproject), get __ossrhUsername__ and __ossrhPassword__ - 
+  your own OSSRH credentials.
   * [Getting started](https://central.sonatype.org/pages/producers.html)
   * [Choose your coordinates](https://central.sonatype.org/pages/choosing-your-coordinates.html)
 * Create new GPG key.
@@ -52,17 +53,25 @@ gradle publishToMavenLocal
 gradle publish
 ```
 Last step __gradle publish__, based on current artefact version publishes to snapshot or stage repository.
+
+### 3.1 SNAPSHOT artefacts
+Artefacts published to [oss.sonatype.org SNAPSHOT](https://oss.sonatype.org/content/repositories/snapshots)
+repository must have __-SNAPSHOT__ version suffix. No further action required after __gradle publish__ command.
 * [Published SNAPSHOT artefact example](https://oss.sonatype.org/content/repositories/snapshots/one/microproject/test/test-artefact/1.0.4-SNAPSHOT)
 
-### SNAPSHOT artefacts
-Artefacts published to [oss.sonatype.org SNAPSHOT](https://oss.sonatype.org/content/repositories/snapshots)
-repository must have __-SNAPSHOT__ version suffix.
-
-### Stage and Release artefacts
+### 3.2 Stage and Release artefacts
 Artefacts published to [oss.sonatype.org stage](https://oss.sonatype.org/service/local/staging/deploy/maven2)
 repository must NOT have __-SNAPSHOT__ version suffix. Release is finished manually using
 [sonatype nexus UI](https://oss.sonatype.org/#stagingRepositories). Login using your OSSRH credentials.
-
+After __gradle publish__ action, staging repository is in __open__ state. 
+* Next step will close staging repository. Close action will verify published artefacts.
+  ![01-release-publish](../docs/01-release-publish_close-staging-repository.png)
+* After staging repository is closed successfully, there are 2 options: Release or Drop.  
+  ![02-release-publish](../docs/02-release-publish_release-staging-repository.png)
+* In case Release is selected, staging repository is fully published to maven central. 
+  You have to wait until the release propagates into official maven repositories.
+* [Published Release artefact example](https://repo.maven.apache.org/maven2/one/microproject/test/test-artefact/1.0.7)
+* [Published Release artefact search](https://search.maven.org/search?q=g:one.microproject.test%20AND%20a:test-artefact)
 
 ## 4. Consuming SNAPSHOT Artefacts
 ### Consuming SNAPSHOT Artefact in Maven
@@ -105,7 +114,7 @@ repositories {
         <dependency>
             <groupId>one.microproject.test</groupId>
             <artifactId>test-artefact</artifactId>
-            <version>1.0.4</version>
+            <version>1.0.7</version>
         </dependency>
     </dependencies>
 </project>
@@ -114,7 +123,7 @@ repositories {
 ### Consuming Released Artefact in Gradle
 ```
 dependencies {
-  implementation 'one.microproject.test:test-artefact:1.0.4' 
+  implementation 'one.microproject.test:test-artefact:1.0.7' 
 }
 ```
 
