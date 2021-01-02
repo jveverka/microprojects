@@ -37,7 +37,7 @@ gradle publishToMavenLocal
         <dependency>
             <groupId>one.microproject.test</groupId>
             <artifactId>test-artefact</artifactId>
-            <version>1.0.1-SNAPSHOT</version>
+            <version>1.0.3-SNAPSHOT</version>
         </dependency>
     </dependencies>
     <repositories>
@@ -52,7 +52,7 @@ gradle publishToMavenLocal
 ## Consume Artefact in gradle
 ```
 dependencies {
-  implementation 'one.microproject.test:test-artefact:1.0.1-SNAPSHOT' 
+  implementation 'one.microproject.test:test-artefact:1.0.3-SNAPSHOT' 
 }
 repositories {
     maven {
