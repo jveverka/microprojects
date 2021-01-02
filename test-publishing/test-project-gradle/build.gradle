@@ -6,7 +6,7 @@ group = 'com.java.example'
 version = '1.0.0-SNAPSHOT'
 
 dependencies {
-    implementation 'one.microproject.test:test-artefact:1.0.1-SNAPSHOT'
+    implementation 'one.microproject.test:test-artefact:1.0.3-SNAPSHOT'
 }
 
 repositories {
