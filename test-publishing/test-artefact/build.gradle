@@ -5,9 +5,10 @@ plugins {
 }
 
 group = 'one.microproject.test'
-version = '1.0.4-SNAPSHOT'
-//version = '1.0.5'
+//version = '1.0.5-SNAPSHOT'
+version = '1.0.6'
 sourceCompatibility = '11'
+ext.isSnapshot = version.endsWith("-SNAPSHOT")
 
 repositories {
     mavenCentral()
@@ -41,8 +42,7 @@ publishing {
 
             groupId = 'one.microproject.test'
             artifactId = 'test-artefact'
-            version = '1.0.4-SNAPSHOT'
-            //version = '1.0.5'
+            //version = ...
 
             from components.java
             artifact(sourceJar) {
@@ -79,8 +79,11 @@ publishing {
     }
     repositories {
         maven {
-            //url "https://oss.sonatype.org/service/local/staging/deploy/maven2"
-            url "https://oss.sonatype.org/content/repositories/snapshots"
+            if (isSnapshot) {
+                url "https://oss.sonatype.org/content/repositories/snapshots"
+            } else {
+                url "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+            }
             credentials {
                 username ossrhUsername
                 password ossrhPassword
