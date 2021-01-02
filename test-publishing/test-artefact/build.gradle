@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'one.microproject.test'
-version = '1.0.3-SNAPSHOT'
+version = '1.0.4-SNAPSHOT'
 sourceCompatibility = '11'
 
 repositories {
@@ -40,7 +40,7 @@ publishing {
 
             groupId = 'one.microproject.test'
             artifactId = 'test-artefact'
-            version = '1.0.3-SNAPSHOT'
+            version = '1.0.4-SNAPSHOT'
 
             from components.java
             artifact(sourceJar) {
@@ -87,77 +87,9 @@ publishing {
     }
 }
 
-/*
-def customizePom(pom) {
-    pom.withXml {
-        def root = asNode()
-
-        // eliminate test-scoped dependencies (no need in maven central POMs)
-        root.dependencies.removeAll { dep ->
-            dep.scope == "test"
-        }
-
-        // add all items necessary for maven central publication
-        root.children().last() + {
-            resolveStrategy = Closure.DELEGATE_FIRST
-
-            description 'A project used as an example on how to set up pushing its components to the Central Repository.'
-            name 'microproject.one test artefact'
-            url 'https://github.com/jveverka/microproject'
-            organization {
-                name 'one.microproject.test'
-                url 'https://github.com/jveverka/microproject'
-            }
-            issueManagement {
-                system 'GitHub'
-                url 'https://github.com/jveverka/microproject/issues'
-            }
-            licenses {
-                license {
-                    name 'MIT License'
-                    url 'https://github.com/jveverka/microproject/blob/master/LICENSE'
-                    distribution 'repo'
-                }
-            }
-            scm {
-                connection = 'scm:git:https://github.com/jveverka/microproject.git'
-                developerConnection = 'scm:git:https://github.com/jveverka/microproject.git'
-                url = 'https://github.com/jveverka/microproject.git'
-            }
-            developers {
-                developer {
-                    name 'jveverka'
-                }
-            }
-        }
-    }
-}
-
-pom.withXml {
-    def pomFile = file("${project.buildDir}/generated-pom.xml")
-    writeTo(pomFile)
-    def pomAscFile = signing.sign(pomFile).signatureFiles[0]
-    artifact(pomAscFile) {
-        classifier = null
-        extension = 'pom.asc'
-    }
-}
-// create the signed artifacts
-project.tasks.signArchives.signatureFiles.each {
-    artifact(it) {
-        def matcher = it.file =~ /-(sources|javadoc)\.jar\.asc$/
-        if (matcher.find()) {
-            classifier = matcher.group(1)
-        } else {
-            classifier = null
-        }
-        extension = 'jar.asc'
-    }
-}
-*/
-
 signing {
     sign configurations.archives
+    sign publishing.publications.mavenJava
 }
 
 model {
