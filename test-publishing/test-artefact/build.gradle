@@ -5,10 +5,9 @@ plugins {
 }
 
 group = 'one.microproject.test'
-//version = '1.0.5-SNAPSHOT'
-version = '1.0.7'
+version = '1.0.9-SNAPSHOT'
+//version = '1.0.9'
 sourceCompatibility = '11'
-ext.isSnapshot = version.endsWith("-SNAPSHOT")
 
 repositories {
     mavenCentral()
@@ -18,6 +17,22 @@ dependencies {
     implementation 'org.slf4j:slf4j-api:1.7.30'
     testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
     testImplementation 'org.slf4j:slf4j-simple:1.7.30'
+}
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+}
+
+ext.isSnapshot = version.endsWith("-SNAPSHOT")
+if (!project.hasProperty('ossrhUsername') || !project.hasProperty('ossrhPassword')) {
+    ext.ossrhUsername = "none";
+    ext.ossrhPassword = "****";
+    ext.isPublishVersion = false;
+} else {
+    ext.isPublishVersion = true;
 }
 
 task sourceJar(type: Jar) {
@@ -34,6 +49,10 @@ artifacts {
     archives jar
     archives sourceJar
     archives javadocJar
+}
+
+tasks.withType(Sign) {
+    onlyIf { isPublishVersion }
 }
 
 publishing {
@@ -109,9 +128,4 @@ model {
     }
 }
 
-test {
-    useJUnitPlatform()
-    testLogging {
-        events "passed", "skipped", "failed"
-    }
-}
+
