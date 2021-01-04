@@ -1,8 +1,9 @@
-package one.microproject.logger.config;
+package one.microproject.logger.config.security;
 
+import one.microproject.iamservice.client.IAMClient;
+import one.microproject.iamservice.client.JWTUtils;
 import one.microproject.iamservice.core.dto.StandardTokenClaims;
-import one.microproject.logger.config.security.AuthenticationImpl;
-import one.microproject.logger.service.SecurityService;
+import one.microproject.iamservice.core.model.JWToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,18 +22,19 @@ public class SecurityFilter implements WebFilter {
 
     private static final Logger LOG = LoggerFactory.getLogger(SecurityFilter.class);
 
-    private final SecurityService securityService;
+    private final IAMClient iamClient;
 
     @Autowired
-    public SecurityFilter(SecurityService securityService) {
-        this.securityService = securityService;
+    public SecurityFilter(IAMClient iamClient) {
+        this.iamClient = iamClient;
     }
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
         Optional<String> authorization = exchange.getRequest().getHeaders().get("Authorization").stream().findFirst();
         if (authorization.isPresent()) {
-            Optional<StandardTokenClaims> standardTokenClaims = securityService.validate(authorization.get());
+            JWToken jwToken = JWTUtils.extractJwtToken(authorization.get());
+            Optional<StandardTokenClaims> standardTokenClaims = iamClient.validate(jwToken);;
             if (standardTokenClaims.isPresent()) {
                 LOG.info("filter: AUTHORIZED");
                 ReactiveSecurityContextHolder.withAuthentication(new AuthenticationImpl(standardTokenClaims.get()));
