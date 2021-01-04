@@ -24,11 +24,10 @@ public class SecurityServiceImpl implements SecurityService {
     }
 
     @Override
-    public boolean validate(String authorization) {
+    public Optional<StandardTokenClaims> validate(String authorization) {
         LOG.debug("authorization: {}",  authorization);
         JWToken jwToken = JWTUtils.extractJwtToken(authorization);
-        Optional<StandardTokenClaims> validate = iamClient.validate(jwToken);
-        return validate.isPresent();
+        return iamClient.validate(jwToken);
     }
 
 }

@@ -29,8 +29,7 @@ import static org.springframework.web.reactive.function.server.RequestPredicates
 public class Router {
 
     @Bean
-    public RouterFunction<ServerResponse> route(SecurityService securityService,
-                                                DataSeriesService dataSeriesService,
+    public RouterFunction<ServerResponse> route(DataSeriesService dataSeriesService,
                                                 DataRecordService dataRecordService) {
         return RouterFunctions
                 //Data Series - APIs
@@ -86,8 +85,7 @@ public class Router {
                     Long timeStamp = Long.parseLong(request.pathVariable("timeStamp"));
                     Mono<GenericResponse> genericResponseMono = dataRecordService.delete(id, timeStamp);
                     return ServerResponse.ok().body(genericResponseMono, GenericResponse.class);
-                })
-                .filter(new SecurityHandlerFilterFunction(securityService));
+                });
     }
 
 }

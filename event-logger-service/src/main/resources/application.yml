@@ -25,4 +25,4 @@ logging:
       microproject:
         iamservice:
           client:
-            impl: DEBUG
+            impl: INFO

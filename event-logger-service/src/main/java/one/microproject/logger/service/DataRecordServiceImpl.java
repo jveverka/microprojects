@@ -17,6 +17,7 @@ import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -47,6 +48,7 @@ public class DataRecordServiceImpl implements DataRecordService {
     }
 
     @Override
+    @PreAuthorize("@authorizerService.hasAccess('saveDataRecord', authentication)")
     public Mono<GenericResponse> save(InsertDataRecord insertDataRecord) {
         LOG.info("save: {}:{}", insertDataRecord.getGroupId(), insertDataRecord.getName());
         DataSeriesId id = DataSeriesId.from(insertDataRecord.getGroupId(), insertDataRecord.getName());
@@ -55,6 +57,7 @@ public class DataRecordServiceImpl implements DataRecordService {
     }
 
     @Override
+    @PreAuthorize("@authorizerService.hasAccess('saveDataRecord', authentication)")
     public Mono<GenericResponse> save(CreateDataRecord createDataRecord) {
         LOG.info("save: {}:{}", createDataRecord.getGroupId(), createDataRecord.getName());
         DataSeriesId id = DataSeriesId.from(createDataRecord.getGroupId(), createDataRecord.getName());
@@ -63,6 +66,7 @@ public class DataRecordServiceImpl implements DataRecordService {
     }
 
     @Override
+    @PreAuthorize("@authorizerService.hasAccess('saveDataRecord', authentication)")
     public Mono<GenericResponse> save(DataSeriesId id, DataRecord record) {
         Publisher<InsertOneResult> insertOneResultPublisher = mongoDatabase.getCollection(id.getName()).insertOne(toDocument(mapper, record));
         Mono<InsertOneResult> insertOneResultMono =  Mono.from(insertOneResultPublisher);
@@ -70,6 +74,7 @@ public class DataRecordServiceImpl implements DataRecordService {
     }
 
     @Override
+    @PreAuthorize("@authorizerService.hasAccess('getAllRecords', authentication)")
     public Flux<DataRecord> getAll(DataSeriesId id) {
         LOG.info("getAll");
         FindPublisher<Document> publisher = mongoDatabase.getCollection(id.getName()).find();
@@ -78,6 +83,7 @@ public class DataRecordServiceImpl implements DataRecordService {
     }
 
     @Override
+    @PreAuthorize("@authorizerService.hasAccess('getRecords', authentication)")
     public Flux<DataRecord> get(DataSeriesId id, Long beginTime, Long duration) {
         LOG.info("get: {}:{}:{}", id.toStringId(), beginTime, duration);
         Long endTime = beginTime + duration;
@@ -88,6 +94,7 @@ public class DataRecordServiceImpl implements DataRecordService {
     }
 
     @Override
+    @PreAuthorize("@authorizerService.hasAccess('deleteRecord', authentication)")
     public Mono<GenericResponse> delete(DataSeriesId id, Long timeStamp) {
         LOG.info("delete: {}:{}", id.toStringId(), timeStamp);
         Publisher<DeleteResult> deleteOne = mongoDatabase.getCollection(id.getName()).deleteOne(eq(TIME_STAMP, timeStamp));
