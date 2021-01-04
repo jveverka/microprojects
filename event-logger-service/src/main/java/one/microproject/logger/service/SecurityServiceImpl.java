@@ -1,10 +1,15 @@
 package one.microproject.logger.service;
 
 import one.microproject.iamservice.client.IAMClient;
+import one.microproject.iamservice.client.JWTUtils;
+import one.microproject.iamservice.core.dto.StandardTokenClaims;
+import one.microproject.iamservice.core.model.JWToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class SecurityServiceImpl implements SecurityService {
@@ -21,7 +26,9 @@ public class SecurityServiceImpl implements SecurityService {
     @Override
     public boolean validate(String authorization) {
         LOG.debug("authorization: {}",  authorization);
-        return true;
+        JWToken jwToken = JWTUtils.extractJwtToken(authorization);
+        Optional<StandardTokenClaims> validate = iamClient.validate(jwToken);
+        return validate.isPresent();
     }
 
 }

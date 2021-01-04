@@ -2,10 +2,26 @@ package one.microproject.logger.tests;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import one.microproject.iamservice.client.IAMClient;
+import one.microproject.iamservice.core.dto.CreateClient;
+import one.microproject.iamservice.core.dto.CreateUser;
+import one.microproject.iamservice.core.dto.StandardTokenClaims;
+import one.microproject.iamservice.core.dto.TokenResponse;
 import one.microproject.iamservice.core.dto.TokenResponseWrapper;
+import one.microproject.iamservice.core.model.ClientId;
+import one.microproject.iamservice.core.model.ClientProperties;
+import one.microproject.iamservice.core.model.JWToken;
+import one.microproject.iamservice.core.model.UserProperties;
+import one.microproject.iamservice.core.services.dto.SetupOrganizationRequest;
+import one.microproject.iamservice.core.services.dto.SetupOrganizationResponse;
 import one.microproject.iamservice.core.utils.ModelUtils;
+import one.microproject.iamservice.serviceclient.IAMAuthorizerClient;
 import one.microproject.iamservice.serviceclient.IAMServiceClientBuilder;
 import one.microproject.iamservice.serviceclient.IAMServiceManagerClient;
+import one.microproject.iamservice.serviceclient.IAMServiceProjectManagerClient;
+import one.microproject.iamservice.serviceclient.IAMServiceUserManagerClient;
+import one.microproject.iamservice.serviceclient.impl.AuthenticationException;
+import one.microproject.logger.config.IAMClientConfiguration;
 import one.microproject.logger.dto.CreateDataSeriesRequest;
 import one.microproject.logger.dto.DataSeriesInfo;
 import one.microproject.logger.dto.GenericResponse;
@@ -34,6 +50,9 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -54,17 +73,29 @@ public class AppEventLoggerTests {
     private static String iamServiceBaseURL;
     private static String accessToken = "access_token";
 
+    private static IAMServiceManagerClient iamServiceManagerClient;
+    private static TokenResponse globalAdminTokens;
+    private static TokenResponse projectAdminTokens;
+    private static TokenResponse readUserTokens;
+    private static TokenResponse writeUserTokens;
+
     @Autowired
     private ObjectMapper mapper;
 
     @Autowired
     private WebTestClient webClient;
 
+    @Autowired
+    private IAMClient iamClient;
+
+    @Autowired
+    private IAMClientConfiguration configuration;
+
     @Test
     @Order(0)
     public void setupIAMService() throws IOException {
         URL baseUrl = new URL(iamServiceBaseURL);
-        IAMServiceManagerClient iamServiceManagerClient = IAMServiceClientBuilder.builder()
+        iamServiceManagerClient = IAMServiceClientBuilder.builder()
                 .withBaseUrl(baseUrl)
                 .withConnectionTimeout(60L, TimeUnit.SECONDS)
                 .build();
@@ -72,6 +103,60 @@ public class AppEventLoggerTests {
                 .getIAMAdminAuthorizerClient()
                 .getAccessTokensOAuth2UsernamePassword("admin", "secret", ModelUtils.IAM_ADMIN_CLIENT_ID, "top-secret");
         assertTrue(tokenResponseWrapper.isOk());
+        globalAdminTokens = tokenResponseWrapper.getTokenResponse();
+    }
+
+    @Test
+    @Order(1)
+    public void createProjectAndProjectAdmin() throws AuthenticationException {
+        SetupOrganizationRequest request = new SetupOrganizationRequest(configuration.getOrganizationId().getId(), "",
+                configuration.getProjectId().getId(), "", "admin-client", "acs",
+                "admin", "7s4sa5",  "", Set.of(configuration.getProjectId().getId()), "", new UserProperties(Map.of()));
+        SetupOrganizationResponse setupOrganizationResponse = iamServiceManagerClient.setupOrganization(globalAdminTokens.getAccessToken(), request);
+        assertNotNull(setupOrganizationResponse);
+    }
+
+    @Test
+    @Order(2)
+    public void createProjectUsers() throws IOException, AuthenticationException {
+        IAMAuthorizerClient iamAuthorizerClient = iamServiceManagerClient.getIAMAuthorizerClient(configuration.getOrganizationId(), configuration.getProjectId());
+        TokenResponseWrapper tokenResponseWrapper = iamAuthorizerClient.getAccessTokensOAuth2UsernamePassword("admin", "7s4sa5", ClientId.from("admin-client"), "acs");
+        assertTrue(tokenResponseWrapper.isOk());
+        projectAdminTokens = tokenResponseWrapper.getTokenResponse();
+
+        IAMServiceProjectManagerClient iamServiceProject = iamServiceManagerClient.getIAMServiceProject(projectAdminTokens.getAccessToken(), configuration.getOrganizationId(), configuration.getProjectId());
+        CreateClient createClient = new CreateClient("client-001", "", 3600L, 3600L, "ds65f", ClientProperties.from(""));
+        iamServiceProject.createClient(createClient);
+        IAMServiceUserManagerClient iamServiceUserManagerClient = iamServiceManagerClient.getIAMServiceUserManagerClient(projectAdminTokens.getAccessToken(), configuration.getOrganizationId(), configuration.getProjectId());
+        CreateUser createReadOnlyUser = new CreateUser("read-user", "",  3600L, 3600L, "", "as87d6a", new UserProperties(Map.of()));
+        CreateUser createReadWriteUser = new CreateUser("write-user", "",  3600L, 3600L, "", "6a57dfa", new UserProperties(Map.of()));
+        iamServiceUserManagerClient.createUser(createReadOnlyUser);
+        iamServiceUserManagerClient.createUser(createReadWriteUser);
+    }
+
+    @Test
+    @Order(3)
+    public void getUserTokens() throws IOException {
+        IAMAuthorizerClient iamAuthorizerClient = iamServiceManagerClient.getIAMAuthorizerClient(configuration.getOrganizationId(), configuration.getProjectId());
+        TokenResponseWrapper readUserWrapper = iamAuthorizerClient.getAccessTokensOAuth2UsernamePassword("read-user", "as87d6a", ClientId.from("client-001"), "ds65f");
+        TokenResponseWrapper writeUserWrapper = iamAuthorizerClient.getAccessTokensOAuth2UsernamePassword("write-user", "6a57dfa", ClientId.from("client-001"), "ds65f");
+
+        assertTrue(readUserWrapper.isOk());
+        assertTrue(writeUserWrapper.isOk());
+        readUserTokens = readUserWrapper.getTokenResponse();
+        writeUserTokens = writeUserWrapper.getTokenResponse();
+    }
+
+    @Test
+    @Order(4)
+    public void reloadKeyCache() {
+        iamClient.updateKeyCache();
+        Optional<StandardTokenClaims> readUserClaims = iamClient.validate(new JWToken(readUserTokens.getAccessToken()));
+        assertTrue(readUserClaims.isPresent());
+        Optional<StandardTokenClaims> writeUserClaims = iamClient.validate(new JWToken(writeUserTokens.getAccessToken()));
+        assertTrue(writeUserClaims.isPresent());
+
+        accessToken = readUserTokens.getAccessToken();
     }
 
     @Test

@@ -2,6 +2,8 @@ package one.microproject.logger.config;
 
 import one.microproject.iamservice.client.IAMClient;
 import one.microproject.iamservice.client.IAMClientBuilder;
+import one.microproject.iamservice.core.model.OrganizationId;
+import one.microproject.iamservice.core.model.ProjectId;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,6 +70,14 @@ public class IAMClientConfiguration {
 
     public void setTimeUnit(TimeUnit timeUnit) {
         this.timeUnit = timeUnit;
+    }
+
+    public OrganizationId getOrganizationId()  {
+        return OrganizationId.from(organizationId);
+    }
+
+    public ProjectId getProjectId() {
+        return ProjectId.from(projectId);
     }
 
 }
