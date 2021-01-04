@@ -13,7 +13,7 @@ spring:
 app:
   iam-client:
     organization-id: backend-services
-    project-id: event-logger-service
+    project-id: event-logger
     base-url: http://127.0.0.1:8080
     polling-interval: 30
     time-unit: SECONDS
