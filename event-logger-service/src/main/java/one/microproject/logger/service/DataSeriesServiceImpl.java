@@ -9,6 +9,7 @@ import one.microproject.logger.repository.DataSeriesRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -28,6 +29,7 @@ public class DataSeriesServiceImpl implements DataSeriesService {
     }
 
     @Override
+    @PreAuthorize("@authorizerService.hasAccess('createDataSeries', authentication)")
     public Mono<GenericResponse> createDataSeries(CreateDataSeriesRequest request) {
         LOG.info("createDataSeries: {}:{}", request.getGroupId(), request.getName());
         DataSeriesId id = new DataSeriesId(request.getGroupId(), request.getName());
@@ -37,6 +39,7 @@ public class DataSeriesServiceImpl implements DataSeriesService {
     }
 
     @Override
+    @PreAuthorize("@authorizerService.hasAccess('getAllDataSeries', authentication)")
     public Flux<DataSeriesInfo> getAll() {
         LOG.info("getAll");
         Flux<DataSeries> dataSeriesFlux = dataSeriesRepository.findAll();
@@ -44,6 +47,7 @@ public class DataSeriesServiceImpl implements DataSeriesService {
     }
 
     @Override
+    @PreAuthorize("@authorizerService.hasAccess('deleteDataSeries', authentication)")
     public Mono<GenericResponse> deleteDataSeries(DataSeriesId id) {
         LOG.info("deleteDataSeries {}", id.toStringId());
         Mono<Void> deleted = dataSeriesRepository.deleteById(id.toStringId());
@@ -52,6 +56,7 @@ public class DataSeriesServiceImpl implements DataSeriesService {
     }
 
     @Override
+    @PreAuthorize("@authorizerService.hasAccess('getDataSeries', authentication)")
     public Mono<DataSeriesInfo> get(DataSeriesId id) {
         LOG.info("get {}", id.toStringId());
         Mono<DataSeries> found = dataSeriesRepository.findById(id.toStringId());

@@ -9,7 +9,6 @@ import one.microproject.logger.model.DataRecord;
 import one.microproject.logger.model.DataSeriesId;
 import one.microproject.logger.service.DataRecordService;
 import one.microproject.logger.service.DataSeriesService;
-import one.microproject.logger.service.SecurityService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.server.RouterFunction;
@@ -29,8 +28,7 @@ import static org.springframework.web.reactive.function.server.RequestPredicates
 public class Router {
 
     @Bean
-    public RouterFunction<ServerResponse> route(SecurityService securityService,
-                                                DataSeriesService dataSeriesService,
+    public RouterFunction<ServerResponse> route(DataSeriesService dataSeriesService,
                                                 DataRecordService dataRecordService) {
         return RouterFunctions
                 //Data Series - APIs
@@ -86,8 +84,7 @@ public class Router {
                     Long timeStamp = Long.parseLong(request.pathVariable("timeStamp"));
                     Mono<GenericResponse> genericResponseMono = dataRecordService.delete(id, timeStamp);
                     return ServerResponse.ok().body(genericResponseMono, GenericResponse.class);
-                })
-                .filter(new SecurityHandlerFilterFunction(securityService));
+                });
     }
 
 }

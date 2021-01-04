@@ -9,3 +9,20 @@ spring:
       #user: loggeruser
       #password: secret
       #uri: mongo://localhost:27017/test
+
+app:
+  iam-client:
+    organization-id: backend-services
+    project-id: event-logger
+    base-url: http://127.0.0.1:8080
+    polling-interval: 30
+    time-unit: SECONDS
+
+logging:
+  level:
+    root: INFO
+    one:
+      microproject:
+        iamservice:
+          client:
+            impl: INFO
