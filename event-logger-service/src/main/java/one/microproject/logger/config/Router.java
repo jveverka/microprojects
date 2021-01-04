@@ -9,7 +9,6 @@ import one.microproject.logger.model.DataRecord;
 import one.microproject.logger.model.DataSeriesId;
 import one.microproject.logger.service.DataRecordService;
 import one.microproject.logger.service.DataSeriesService;
-import one.microproject.logger.service.SecurityService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.server.RouterFunction;
