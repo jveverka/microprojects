@@ -54,4 +54,6 @@ public class DataSeriesId {
         return new DataSeriesId(groupId, name);
     }
 
+    public static DataSeriesId EMPTY = new DataSeriesId("", "");
+
 }

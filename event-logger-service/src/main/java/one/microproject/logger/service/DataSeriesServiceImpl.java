@@ -29,7 +29,7 @@ public class DataSeriesServiceImpl implements DataSeriesService {
     }
 
     @Override
-    @PreAuthorize("@authorizerService.hasAccess('DataSeries', 'create', authentication)")
+    @PreAuthorize("@authorizerService.hasAccess('DataSeries', 'create', #request, authentication)")
     public Mono<GenericResponse> createDataSeries(CreateDataSeriesRequest request) {
         LOG.info("createDataSeries: {}:{}", request.getGroupId(), request.getName());
         DataSeriesId id = new DataSeriesId(request.getGroupId(), request.getName());
@@ -47,7 +47,7 @@ public class DataSeriesServiceImpl implements DataSeriesService {
     }
 
     @Override
-    @PreAuthorize("@authorizerService.hasAccess('DataSeries', 'delete', authentication)")
+    @PreAuthorize("@authorizerService.hasAccess('DataSeries', 'delete', #id, authentication)")
     public Mono<GenericResponse> deleteDataSeries(DataSeriesId id) {
         LOG.info("deleteDataSeries {}", id.toStringId());
         Mono<Void> deleted = dataSeriesRepository.deleteById(id.toStringId());
@@ -56,7 +56,7 @@ public class DataSeriesServiceImpl implements DataSeriesService {
     }
 
     @Override
-    @PreAuthorize("@authorizerService.hasAccess('DataSeries', 'get', authentication)")
+    @PreAuthorize("@authorizerService.hasAccess('DataSeries', 'get', #id, authentication)")
     public Mono<DataSeriesInfo> get(DataSeriesId id) {
         LOG.info("get {}", id.toStringId());
         Mono<DataSeries> found = dataSeriesRepository.findById(id.toStringId());
