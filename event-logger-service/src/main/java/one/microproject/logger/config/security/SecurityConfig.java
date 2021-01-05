@@ -23,7 +23,7 @@ public class SecurityConfig {
 
     @Bean
     public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
-        http.csrf().disable().addFilterAfter(securityFilter, SecurityWebFiltersOrder.LAST);//.anonymous();
+        http.csrf().disable().addFilterAfter(securityFilter, SecurityWebFiltersOrder.LAST);
         return http.build();
     }
 

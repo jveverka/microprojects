@@ -15,6 +15,7 @@ import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -31,14 +32,17 @@ public class SecurityFilter implements WebFilter {
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
-        Optional<String> authorization = exchange.getRequest().getHeaders().get("Authorization").stream().findFirst();
-        if (authorization.isPresent()) {
-            JWToken jwToken = JWTUtils.extractJwtToken(authorization.get());
-            Optional<StandardTokenClaims> standardTokenClaims = iamClient.validate(jwToken);;
-            if (standardTokenClaims.isPresent()) {
-                LOG.info("filter: AUTHORIZED");
-                ReactiveSecurityContextHolder.withAuthentication(new AuthenticationImpl(standardTokenClaims.get()));
-                return chain.filter(exchange).contextWrite((c) -> ReactiveSecurityContextHolder.withAuthentication(new AuthenticationImpl(standardTokenClaims.get())));
+        List<String> authorizationHeaders = exchange.getRequest().getHeaders().get("Authorization");
+        if (authorizationHeaders != null) {
+            Optional<String> authorization = authorizationHeaders.stream().findFirst();
+            if (authorization.isPresent()) {
+                JWToken jwToken = JWTUtils.extractJwtToken(authorization.get());
+                Optional<StandardTokenClaims> standardTokenClaims = iamClient.validate(jwToken);
+                if (standardTokenClaims.isPresent()) {
+                    LOG.info("filter: AUTHORIZED");
+                    ReactiveSecurityContextHolder.withAuthentication(new AuthenticationImpl(standardTokenClaims.get()));
+                    return chain.filter(exchange).contextWrite(c -> ReactiveSecurityContextHolder.withAuthentication(new AuthenticationImpl(standardTokenClaims.get())));
+                }
             }
         }
         LOG.info("filter: UNAUTHORIZED");

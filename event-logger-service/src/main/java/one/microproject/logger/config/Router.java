@@ -27,6 +27,12 @@ import static org.springframework.web.reactive.function.server.RequestPredicates
 @Configuration
 public class Router {
 
+    private static final String GROUP_ID = "groupId";
+    private static final String NAME = "name";
+    private static final String TIME_STAMP = "timeStamp";
+    private static final String START_TIME = "startTime";
+    private static final String DURATION = "duration";
+
     @Bean
     public RouterFunction<ServerResponse> route(DataSeriesService dataSeriesService,
                                                 DataRecordService dataRecordService) {
@@ -43,28 +49,28 @@ public class Router {
                 })
                 .andRoute(DELETE("/services/series/{groupId}/{name}").and(accept(APPLICATION_JSON)), request -> {
                     DataSeriesId id =
-                            new DataSeriesId(request.pathVariable("groupId"), request.pathVariable("name"));
+                            new DataSeriesId(request.pathVariable(GROUP_ID), request.pathVariable(NAME));
                     Mono<GenericResponse> genericResponseMono = dataSeriesService.deleteDataSeries(id);
                     return ServerResponse.ok().body(genericResponseMono, GenericResponse.class);
                 })
                 .andRoute(GET("/services/series/{groupId}/{name}").and(accept(APPLICATION_JSON)), request -> {
                     DataSeriesId id =
-                            new DataSeriesId(request.pathVariable("groupId"), request.pathVariable("name"));
+                            new DataSeriesId(request.pathVariable(GROUP_ID), request.pathVariable(NAME));
                     Mono<DataSeriesInfo> dataSeriesInfoMono = dataSeriesService.get(id);
                     return ServerResponse.ok().body(dataSeriesInfoMono, DataSeriesInfo.class);
                 })
                 // Data Records - APIs
                 .andRoute(GET("/services/records/{groupId}/{name}").and(accept(APPLICATION_JSON)), request -> {
                     DataSeriesId id =
-                            new DataSeriesId(request.pathVariable("groupId"), request.pathVariable("name"));
+                            new DataSeriesId(request.pathVariable(GROUP_ID), request.pathVariable(NAME));
                     Flux<DataRecord> dataRecordFlux = dataRecordService.getAll(id);
                     return ServerResponse.ok().body(dataRecordFlux, DataRecord.class);
                 })
                 .andRoute(GET("/services/records/{groupId}/{name}/{startTime}/{duration}").and(accept(APPLICATION_JSON)), request -> {
                     DataSeriesId id =
-                            new DataSeriesId(request.pathVariable("groupId"), request.pathVariable("name"));
-                    Long startTime = Long.parseLong(request.pathVariable("startTime"));
-                    Long duration = Long.parseLong(request.pathVariable("duration"));
+                            new DataSeriesId(request.pathVariable(GROUP_ID), request.pathVariable(NAME));
+                    Long startTime = Long.parseLong(request.pathVariable(START_TIME));
+                    Long duration = Long.parseLong(request.pathVariable(DURATION));
                     Flux<DataRecord> dataRecordFlux = dataRecordService.get(id, startTime, duration);
                     return ServerResponse.ok().body(dataRecordFlux, DataRecord.class);
                 })
@@ -80,8 +86,8 @@ public class Router {
                 })
                 .andRoute(DELETE("/services/records/{groupId}/{name}/{timeStamp}").and(accept(APPLICATION_JSON)), request -> {
                     DataSeriesId id =
-                            new DataSeriesId(request.pathVariable("groupId"), request.pathVariable("name"));
-                    Long timeStamp = Long.parseLong(request.pathVariable("timeStamp"));
+                            new DataSeriesId(request.pathVariable(GROUP_ID), request.pathVariable(NAME));
+                    Long timeStamp = Long.parseLong(request.pathVariable(TIME_STAMP));
                     Mono<GenericResponse> genericResponseMono = dataRecordService.delete(id, timeStamp);
                     return ServerResponse.ok().body(genericResponseMono, GenericResponse.class);
                 });

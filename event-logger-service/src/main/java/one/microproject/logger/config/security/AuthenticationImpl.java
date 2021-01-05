@@ -9,13 +9,14 @@ import java.util.stream.Collectors;
 
 public class AuthenticationImpl implements Authentication {
 
-    private final StandardTokenClaims standardTokenClaims;
+    private final transient StandardTokenClaims standardTokenClaims;
     private final Collection<? extends GrantedAuthority> grantedAuthorities;
 
     public AuthenticationImpl(StandardTokenClaims standardTokenClaims) {
         this.standardTokenClaims = standardTokenClaims;
         this.grantedAuthorities = standardTokenClaims.getScope()
-                .stream().map(s -> new GrantedAuthorityImpl(s)).collect(Collectors.toUnmodifiableList());
+                .stream().map(GrantedAuthorityImpl::new)
+                .collect(Collectors.toUnmodifiableList());
     }
 
     @Override
@@ -45,6 +46,7 @@ public class AuthenticationImpl implements Authentication {
 
     @Override
     public void setAuthenticated(boolean isAuthenticated) throws IllegalArgumentException {
+        throw new IllegalArgumentException();
     }
 
     @Override
