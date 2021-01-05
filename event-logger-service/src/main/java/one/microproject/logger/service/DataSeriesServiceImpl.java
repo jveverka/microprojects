@@ -29,7 +29,7 @@ public class DataSeriesServiceImpl implements DataSeriesService {
     }
 
     @Override
-    @PreAuthorize("@authorizerService.hasAccess('createDataSeries', authentication)")
+    @PreAuthorize("@authorizerService.hasAccess('DataSeries', 'create', authentication)")
     public Mono<GenericResponse> createDataSeries(CreateDataSeriesRequest request) {
         LOG.info("createDataSeries: {}:{}", request.getGroupId(), request.getName());
         DataSeriesId id = new DataSeriesId(request.getGroupId(), request.getName());
@@ -39,7 +39,7 @@ public class DataSeriesServiceImpl implements DataSeriesService {
     }
 
     @Override
-    @PreAuthorize("@authorizerService.hasAccess('getAllDataSeries', authentication)")
+    @PreAuthorize("@authorizerService.hasAccess('DataSeries', 'getAll', authentication)")
     public Flux<DataSeriesInfo> getAll() {
         LOG.info("getAll");
         Flux<DataSeries> dataSeriesFlux = dataSeriesRepository.findAll();
@@ -47,7 +47,7 @@ public class DataSeriesServiceImpl implements DataSeriesService {
     }
 
     @Override
-    @PreAuthorize("@authorizerService.hasAccess('deleteDataSeries', authentication)")
+    @PreAuthorize("@authorizerService.hasAccess('DataSeries', 'delete', authentication)")
     public Mono<GenericResponse> deleteDataSeries(DataSeriesId id) {
         LOG.info("deleteDataSeries {}", id.toStringId());
         Mono<Void> deleted = dataSeriesRepository.deleteById(id.toStringId());
@@ -56,7 +56,7 @@ public class DataSeriesServiceImpl implements DataSeriesService {
     }
 
     @Override
-    @PreAuthorize("@authorizerService.hasAccess('getDataSeries', authentication)")
+    @PreAuthorize("@authorizerService.hasAccess('DataSeries', 'get', authentication)")
     public Mono<DataSeriesInfo> get(DataSeriesId id) {
         LOG.info("get {}", id.toStringId());
         Mono<DataSeries> found = dataSeriesRepository.findById(id.toStringId());

@@ -11,9 +11,9 @@ public class AuthorizerService {
 
     private static final Logger LOG = LoggerFactory.getLogger(AuthorizerService.class);
 
-    public boolean hasAccess(String key, Authentication authentication) {
+    public boolean hasAccess(String resourceType, String action, Authentication authentication) {
         StandardTokenClaims standardTokenClaims = (StandardTokenClaims)authentication.getDetails();
-        LOG.info("hasAccess: {} / {}:{}", key, authentication.getName(), standardTokenClaims.getScope());
+        LOG.info("hasAccess: {}/{} # {}:{}", resourceType, action, authentication.getName(), standardTokenClaims.getScope());
         //TODO: implement scope -> key access matching
         return true;
     }
