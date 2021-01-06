@@ -6,6 +6,12 @@
 # Microproject(s)
 Collection of various micro-projects.
 
+* [iam-service OAuth2 server](https://github.com/jveverka/iam-service)
 * [event-logger-service](event-logger-service)
 * [scheduler-engine](scheduler-service)
 * file-server
+
+### Infrastructure
+* [Mongo setup](docs/mongo-setup.md)
+* [Local Docker Registry](docs/local-docker-registry-setup.md)
+
