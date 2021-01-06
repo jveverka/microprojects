@@ -69,6 +69,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @ContextConfiguration(initializers = AppEventLoggerTests.Initializer.class)
 public class AppEventLoggerTests {
 
+    private static final Logger LOG = LoggerFactory.getLogger(AppEventLoggerTests.class);
+
     private static final int DOCKER_EXPOSED_MONGO_PORT = 27017;
     private static final int IAM_SERVICE_EXPOSED_PORT = 8080;
     private static final String MONGO_DOCKER_IMAGE = "mongo:4.2.9";
@@ -78,6 +80,10 @@ public class AppEventLoggerTests {
     private static String accessToken = "access_token";
 
     private static IAMServiceManagerClient iamServiceManagerClient;
+    private static IAMServiceProjectManagerClient iamServiceProjectClient;
+    private static IAMServiceUserManagerClient iamServiceUserManagerClient;
+    private static IAMAuthorizerClient iamAuthorizerClient;
+
     private static TokenResponse globalAdminTokens;
     private static TokenResponse projectAdminTokens;
     private static TokenResponse readUserTokens;
@@ -123,15 +129,15 @@ public class AppEventLoggerTests {
     @Test
     @Order(2)
     public void createProjectUsers() throws IOException, AuthenticationException {
-        IAMAuthorizerClient iamAuthorizerClient = iamServiceManagerClient.getIAMAuthorizerClient(configuration.getOrganizationId(), configuration.getProjectId());
+        iamAuthorizerClient = iamServiceManagerClient.getIAMAuthorizerClient(configuration.getOrganizationId(), configuration.getProjectId());
         TokenResponseWrapper tokenResponseWrapper = iamAuthorizerClient.getAccessTokensOAuth2UsernamePassword("admin", "7s4sa5", ClientId.from("admin-client"), "acs");
         assertTrue(tokenResponseWrapper.isOk());
         projectAdminTokens = tokenResponseWrapper.getTokenResponse();
 
-        IAMServiceProjectManagerClient iamServiceProject = iamServiceManagerClient.getIAMServiceProject(projectAdminTokens.getAccessToken(), configuration.getOrganizationId(), configuration.getProjectId());
+        iamServiceProjectClient = iamServiceManagerClient.getIAMServiceProject(projectAdminTokens.getAccessToken(), configuration.getOrganizationId(), configuration.getProjectId());
         CreateClient createClient = new CreateClient("client-001", "", 3600L, 3600L, "ds65f", ClientProperties.from(""));
-        iamServiceProject.createClient(createClient);
-        IAMServiceUserManagerClient iamServiceUserManagerClient = iamServiceManagerClient.getIAMServiceUserManagerClient(projectAdminTokens.getAccessToken(), configuration.getOrganizationId(), configuration.getProjectId());
+        iamServiceProjectClient.createClient(createClient);
+        iamServiceUserManagerClient = iamServiceManagerClient.getIAMServiceUserManagerClient(projectAdminTokens.getAccessToken(), configuration.getOrganizationId(), configuration.getProjectId());
         CreateUser createReadOnlyUser = new CreateUser("read-user", "", 3600L, 3600L, "", "as87d6a", new UserProperties(Map.of()));
         CreateUser createReadWriteUser = new CreateUser("write-user", "", 3600L, 3600L, "", "6a57dfa", new UserProperties(Map.of()));
         iamServiceUserManagerClient.createUser(createReadOnlyUser);
@@ -141,21 +147,19 @@ public class AppEventLoggerTests {
     @Test
     @Order(3)
     public void setProjectUserRolesAndPermissions() throws AuthenticationException {
-        IAMServiceProjectManagerClient iamServiceProject = iamServiceManagerClient.getIAMServiceProject(projectAdminTokens.getAccessToken(), configuration.getOrganizationId(), configuration.getProjectId());
         CreateRole createReaderRole = new CreateRole("reader-role", "", Set.of(
                 new PermissionInfo(configuration.getProjectId().getId(), "data-series-all", "read")
         ));
-        iamServiceProject.createRole(createReaderRole);
+        iamServiceProjectClient.createRole(createReaderRole);
         CreateRole createWriterRole = new CreateRole("writer-role", "", Set.of(
                 new PermissionInfo(configuration.getProjectId().getId(), "data-series-all", "all")
         ));
-        iamServiceProject.createRole(createWriterRole);
+        iamServiceProjectClient.createRole(createWriterRole);
         CreateRole createAdminRole = new CreateRole("admin-role", "", Set.of(
                 new PermissionInfo(configuration.getProjectId().getId(), "all", "all")
         ));
-        iamServiceProject.createRole(createAdminRole);
+        iamServiceProjectClient.createRole(createAdminRole);
 
-        IAMServiceUserManagerClient iamServiceUserManagerClient = iamServiceManagerClient.getIAMServiceUserManagerClient(projectAdminTokens.getAccessToken(), configuration.getOrganizationId(), configuration.getProjectId());
         iamServiceUserManagerClient.addRoleToUser(UserId.from("read-user"), RoleId.from("reader-role"));
         iamServiceUserManagerClient.addRoleToUser(UserId.from("write-user"), RoleId.from("writer-role"));
         iamServiceUserManagerClient.addRoleToUser(UserId.from("admin"), RoleId.from("admin-role"));
@@ -164,7 +168,6 @@ public class AppEventLoggerTests {
     @Test
     @Order(4)
     public void getUserTokens() throws IOException {
-        IAMAuthorizerClient iamAuthorizerClient = iamServiceManagerClient.getIAMAuthorizerClient(configuration.getOrganizationId(), configuration.getProjectId());
         TokenResponseWrapper readUserWrapper = iamAuthorizerClient.getAccessTokensOAuth2UsernamePassword("read-user", "as87d6a", ClientId.from("client-001"), "ds65f");
         TokenResponseWrapper writeUserWrapper = iamAuthorizerClient.getAccessTokensOAuth2UsernamePassword("write-user", "6a57dfa", ClientId.from("client-001"), "ds65f");
 
@@ -172,6 +175,9 @@ public class AppEventLoggerTests {
         assertTrue(writeUserWrapper.isOk());
         readUserTokens = readUserWrapper.getTokenResponse();
         writeUserTokens = writeUserWrapper.getTokenResponse();
+        LOG.info("PROJECT ADMIN: {}", projectAdminTokens.getAccessToken());
+        LOG.info("READ USER: {}", readUserTokens.getAccessToken());
+        LOG.info("WRITE USER: {}", readUserTokens.getAccessToken());
     }
 
     @Test
