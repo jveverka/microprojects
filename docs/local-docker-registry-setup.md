@@ -22,6 +22,11 @@
    docker build -t {docker-registry-host}:5000/{image-name}:{tag} --file Dockerfile .
    docker push {docker-registry-host}:5000/{image-name}:{tag}
    ```
+   Check docker registry content
+   ```
+   curl -X GET http://{docker-registry-host}:5000/v2/_catalog 
+   curl -X GET http://{docker-registry-host}:5000/v2/{image-name}/tags/list 
+   ```
 
 4. Pull created image(s) from docker registry
    ```
