@@ -9,17 +9,28 @@ docker run -d --name mongo-db \
     -v /opt/micro-services/mongo-data:/data/db \
     mongo:4.2.11
 ```
-
+When MongoDB is running as docker container, setup application users.
 ```
 ./mongo --username mongoadmin --password --host localhost:27017
 show dbs
 use admin
 db.createUser(
    {
-     user: "eventloggeruser",
+     user: "loggeruser",
      pwd: "secret",
      roles: [ { role: "readWrite", db: "loggerdb" } ]
    }
 )
 use loggerdb
+```
+In spring *application.yml* use following MongoDB config:
+```
+spring:
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: loggerdb
+      user: loggeruser
+      password: secret
 ```
