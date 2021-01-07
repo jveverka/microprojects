@@ -7,6 +7,7 @@ docker run -d --name mongo-db \
     -e MONGO_INITDB_ROOT_USERNAME=mongoadmin \
     -e MONGO_INITDB_ROOT_PASSWORD=secret \
     -v /opt/micro-services/mongo-data:/data/db \
+    --network host \
     mongo:4.2.11
 ```
 When MongoDB is running as docker container, setup application users.
