@@ -177,7 +177,7 @@ public class AppEventLoggerTests {
         writeUserTokens = writeUserWrapper.getTokenResponse();
         LOG.info("PROJECT ADMIN: {}", projectAdminTokens.getAccessToken());
         LOG.info("READ USER: {}", readUserTokens.getAccessToken());
-        LOG.info("WRITE USER: {}", readUserTokens.getAccessToken());
+        LOG.info("WRITE USER: {}", writeUserTokens.getAccessToken());
     }
 
     @Test
