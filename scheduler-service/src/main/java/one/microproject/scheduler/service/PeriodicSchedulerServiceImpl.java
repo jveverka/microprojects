@@ -19,6 +19,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -47,7 +48,9 @@ public class PeriodicSchedulerServiceImpl implements PeriodicSchedulerService, J
         if (provider != null) {
             JobId id = JobId.from(UUID.randomUUID().toString());
             Runnable job = provider.createJob(id, request.getTaskParameters(), this);
-            //executorService.scheduleAtFixedRate();
+            ScheduledFuture<?> scheduledFuture = executorService.scheduleAtFixedRate(job, 0L, request.getInterval(), request.getTimeUnit());
+            JobWrapper wrapper = new JobWrapper(scheduledFuture);
+            jobs.put(id, wrapper);
             return Mono.just(id);
         } else {
             return Mono.empty();
