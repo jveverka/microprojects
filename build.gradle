@@ -9,6 +9,6 @@ subprojects {
 project(':event-logger-service') {
 }
 
-project(':scheduler-service') {
+project(':scheduler-service-app') {
 }
 

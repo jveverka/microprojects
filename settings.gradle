@@ -1,2 +1,4 @@
 include "event-logger-service"
-include "scheduler-service"
+
+include "scheduler-service-app"
+project(":scheduler-service-app").projectDir = new File("scheduler-service/scheduler-service-app")
