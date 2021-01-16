@@ -9,6 +9,18 @@ subprojects {
 project(':event-logger-service') {
 }
 
+project(':scheduler-common') {
+}
+
 project(':scheduler-service-app') {
+    dependencies {
+        implementation project(':scheduler-common')
+    }
+}
+
+project(':scheduler-task-example') {
+    dependencies {
+        implementation project(':scheduler-common')
+    }
 }
 

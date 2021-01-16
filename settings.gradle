@@ -1,4 +1,8 @@
 include "event-logger-service"
 
+include "scheduler-common"
+project(":scheduler-common").projectDir = new File("scheduler-service/scheduler-common")
 include "scheduler-service-app"
 project(":scheduler-service-app").projectDir = new File("scheduler-service/scheduler-service-app")
+include "scheduler-task-example"
+project(":scheduler-task-example").projectDir = new File("scheduler-service/scheduler-task-example")

@@ -6,7 +6,6 @@ import one.microproject.scheduler.dto.JobWrapper;
 import one.microproject.scheduler.dto.ScheduleTaskRequest;
 import one.microproject.scheduler.dto.ScheduledTaskInfo;
 import one.microproject.scheduler.dto.TaskInfo;
-import one.microproject.scheduler.model.JobProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;

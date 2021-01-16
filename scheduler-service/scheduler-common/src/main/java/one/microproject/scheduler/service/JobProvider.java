@@ -1,4 +1,4 @@
-package one.microproject.scheduler.model;
+package one.microproject.scheduler.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import one.microproject.scheduler.dto.JobId;
