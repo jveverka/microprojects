@@ -15,6 +15,7 @@ project(':scheduler-common') {
 project(':scheduler-service-app') {
     dependencies {
         implementation project(':scheduler-common')
+        implementation project(':scheduler-task-example')
     }
 }
 

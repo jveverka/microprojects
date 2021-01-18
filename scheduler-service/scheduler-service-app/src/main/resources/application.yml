@@ -1,16 +1,18 @@
 server:
   port: 8091
 spring:
-  data:
-    mongodb:
-      host: localhost
-      port: 27017
-      database: schedulerdb
+#  data:
+#    mongodb:
+#      host: localhost
+#      port: 27017
+#      database: schedulerdb
       #user: scheduleruser
       #password: secret
       #uri: mongo://localhost:27017/test
 
 app:
+  providers:
+    - one.microproject.scheduler.exampletask.JobProviderImpl
   iam-client:
     organization-id: backend-services
     project-id: scheduler

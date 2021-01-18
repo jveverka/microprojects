@@ -8,12 +8,14 @@ import one.microproject.scheduler.dto.ScheduledTaskInfo;
 import one.microproject.scheduler.dto.TaskInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import javax.annotation.PostConstruct;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
@@ -27,12 +29,13 @@ public class PeriodicSchedulerServiceImpl implements PeriodicSchedulerService, J
     private static final Logger LOG = LoggerFactory.getLogger(PeriodicSchedulerServiceImpl.class);
 
     private final ScheduledExecutorService executorService;
-    private final Map<String, JobProvider> providers;
+    private final ProviderFactoryService providerFactoryService;
     private final Map<JobId, JobWrapper> jobs;
 
-    public PeriodicSchedulerServiceImpl() {
+    @Autowired
+    public PeriodicSchedulerServiceImpl(ProviderFactoryService providerFactoryService) {
         this.executorService = Executors.newScheduledThreadPool(8);
-        this.providers = new ConcurrentHashMap<>();
+        this.providerFactoryService = providerFactoryService;
         this.jobs = new ConcurrentHashMap<>();
     }
 
@@ -43,17 +46,20 @@ public class PeriodicSchedulerServiceImpl implements PeriodicSchedulerService, J
 
     @Override
     public Mono<JobId> schedule(ScheduleTaskRequest request) {
-        JobProvider provider = providers.get(request.getTaskType());
-        if (provider != null) {
-            JobId id = JobId.from(UUID.randomUUID().toString());
-            Runnable job = provider.createJob(id, request.getTaskParameters(), this);
-            ScheduledFuture<?> scheduledFuture = executorService.scheduleAtFixedRate(job, 0L, request.getInterval(), request.getTimeUnit());
-            JobWrapper wrapper = new JobWrapper(scheduledFuture);
-            jobs.put(id, wrapper);
-            return Mono.just(id);
-        } else {
-            return Mono.empty();
+        Optional<JobProvider> provider = providerFactoryService.get(request.getTaskType());
+        JobId id = JobId.from(UUID.randomUUID().toString());
+        try {
+            if (provider.isPresent()) {
+                Runnable job = provider.get().createJob(id, request.getTaskParameters(), this);
+                ScheduledFuture<?> scheduledFuture = executorService.scheduleAtFixedRate(job, 0L, request.getInterval(), request.getTimeUnit());
+                JobWrapper wrapper = new JobWrapper(scheduledFuture);
+                jobs.put(id, wrapper);
+                return Mono.just(id);
+            }
+        } catch (CreateJobException e) {
+            LOG.warn("Failed to create Job {}", id.getId());
         }
+        return Mono.empty();
     }
 
     @Override
@@ -81,7 +87,7 @@ public class PeriodicSchedulerServiceImpl implements PeriodicSchedulerService, J
 
     @Override
     public void setResult(JobId jobId, JsonNode result) {
-
+        LOG.info("setResult {}", jobId.getId());
     }
 
 }
