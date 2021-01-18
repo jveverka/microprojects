@@ -1,8 +1,8 @@
 package one.microproject.scheduler.service;
 
 import one.microproject.scheduler.dto.JobId;
-import one.microproject.scheduler.dto.ScheduleTaskRequest;
-import one.microproject.scheduler.dto.ScheduledTaskInfo;
+import one.microproject.scheduler.dto.ScheduleJobRequest;
+import one.microproject.scheduler.dto.ScheduledJobInfo;
 import one.microproject.scheduler.dto.TaskInfo;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -11,10 +11,10 @@ public interface PeriodicSchedulerService {
 
     Flux<TaskInfo> getTypes();
 
-    Mono<JobId> schedule(ScheduleTaskRequest request);
+    Mono<JobId> schedule(ScheduleJobRequest request);
 
-    Flux<ScheduledTaskInfo> getScheduledTasks();
+    Flux<ScheduledJobInfo> getScheduledJobs();
 
-    void cancel(JobId jobId);
+    Mono<JobId> cancel(JobId jobId);
 
 }

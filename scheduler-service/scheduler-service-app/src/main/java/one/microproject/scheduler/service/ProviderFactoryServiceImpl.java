@@ -1,7 +1,11 @@
 package one.microproject.scheduler.service;
 
+import one.microproject.scheduler.dto.TaskInfo;
+import reactor.core.publisher.Flux;
+
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 public class ProviderFactoryServiceImpl implements ProviderFactoryService {
 
@@ -9,6 +13,12 @@ public class ProviderFactoryServiceImpl implements ProviderFactoryService {
 
     public ProviderFactoryServiceImpl(Map<String, JobProvider> providers) {
         this.providers = providers;
+    }
+
+    @Override
+    public Flux<TaskInfo> getTaskInfo() {
+        Stream<TaskInfo> taskInfoStream = providers.values().stream().map(JobProvider::getTaskInfo);
+        return Flux.fromStream(taskInfoStream);
     }
 
     @Override

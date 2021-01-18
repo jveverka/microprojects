@@ -3,8 +3,8 @@ package one.microproject.scheduler.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import one.microproject.scheduler.dto.JobId;
 import one.microproject.scheduler.dto.JobWrapper;
-import one.microproject.scheduler.dto.ScheduleTaskRequest;
-import one.microproject.scheduler.dto.ScheduledTaskInfo;
+import one.microproject.scheduler.dto.ScheduleJobRequest;
+import one.microproject.scheduler.dto.ScheduledJobInfo;
 import one.microproject.scheduler.dto.TaskInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,11 +41,11 @@ public class PeriodicSchedulerServiceImpl implements PeriodicSchedulerService, J
 
     @Override
     public Flux<TaskInfo> getTypes() {
-        return null;
+        return providerFactoryService.getTaskInfo();
     }
 
     @Override
-    public Mono<JobId> schedule(ScheduleTaskRequest request) {
+    public Mono<JobId> schedule(ScheduleJobRequest request) {
         Optional<JobProvider> provider = providerFactoryService.get(request.getTaskType());
         JobId id = JobId.from(UUID.randomUUID().toString());
         try {
@@ -63,16 +63,19 @@ public class PeriodicSchedulerServiceImpl implements PeriodicSchedulerService, J
     }
 
     @Override
-    public Flux<ScheduledTaskInfo> getScheduledTasks() {
+    public Flux<ScheduledJobInfo> getScheduledJobs() {
         return null;
     }
 
     @Override
-    public void cancel(JobId jobId) {
+    public Mono<JobId> cancel(JobId jobId) {
         LOG.info("cancel {}", jobId);
         JobWrapper jobWrapper = jobs.get(jobId);
         if (jobWrapper != null) {
             jobWrapper.getScheduledFuture().cancel(true);
+            return Mono.just(jobId);
+        } else {
+            return Mono.empty();
         }
     }
 

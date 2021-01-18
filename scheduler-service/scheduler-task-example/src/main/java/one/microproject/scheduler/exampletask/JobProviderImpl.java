@@ -3,6 +3,7 @@ package one.microproject.scheduler.exampletask;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import one.microproject.scheduler.dto.JobId;
+import one.microproject.scheduler.dto.TaskInfo;
 import one.microproject.scheduler.service.CreateJobException;
 import one.microproject.scheduler.service.JobProvider;
 import one.microproject.scheduler.service.JobResultCache;
@@ -20,8 +21,8 @@ public class JobProviderImpl implements JobProvider {
     }
 
     @Override
-    public String getTaskType() {
-        return "example-task";
+    public TaskInfo getTaskInfo() {
+        return new TaskInfo("example-task",  "Example Task");
     }
 
     @Override

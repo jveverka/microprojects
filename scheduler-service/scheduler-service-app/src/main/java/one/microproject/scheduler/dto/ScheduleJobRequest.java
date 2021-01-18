@@ -1,11 +1,12 @@
 package one.microproject.scheduler.dto;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import java.util.concurrent.TimeUnit;
 
-public class ScheduleTaskRequest {
+public class ScheduleJobRequest {
 
     private final String taskType;
     private final Long interval;
@@ -13,7 +14,10 @@ public class ScheduleTaskRequest {
     private final JsonNode taskParameters;
 
     @JsonCreator
-    public ScheduleTaskRequest(String taskType, Long interval, TimeUnit timeUnit, JsonNode taskParameters) {
+    public ScheduleJobRequest(@JsonProperty("taskType") String taskType,
+                              @JsonProperty("interval") Long interval,
+                              @JsonProperty("timeUnit") TimeUnit timeUnit,
+                              @JsonProperty("taskParameters") JsonNode taskParameters) {
         this.taskType = taskType;
         this.interval = interval;
         this.timeUnit = timeUnit;

@@ -1,6 +1,7 @@
 package one.microproject.scheduler.dto;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class TaskInfo {
 
@@ -8,7 +9,8 @@ public class TaskInfo {
     private final String name;
 
     @JsonCreator
-    public TaskInfo(String taskType, String name) {
+    public TaskInfo(@JsonProperty("taskType") String taskType,
+                    @JsonProperty("name") String name) {
         this.taskType = taskType;
         this.name = name;
     }

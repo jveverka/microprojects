@@ -33,8 +33,8 @@ public class ProviderConfig {
                 Class<? extends JobProvider> clazz = Class.forName(provider).asSubclass(JobProvider.class);
                 LOG.info("  Creating provider instance ...");
                 JobProvider jobProvider = clazz.getDeclaredConstructor().newInstance();
-                LOG.info("  Registering provider for taskType={}", jobProvider.getTaskType());
-                providerMap.put(jobProvider.getTaskType(), jobProvider);
+                LOG.info("  Registering provider for taskType={}", jobProvider.getTaskInfo().getTaskType());
+                providerMap.put(jobProvider.getTaskInfo().getTaskType(), jobProvider);
             } catch (Exception e) {
                 LOG.error("Error: ", e);
             }
