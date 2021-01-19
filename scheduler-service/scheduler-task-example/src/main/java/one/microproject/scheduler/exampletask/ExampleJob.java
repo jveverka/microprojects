@@ -26,7 +26,20 @@ public class ExampleJob implements Runnable {
 
     @Override
     public void run() {
-        LOG.info("Executing ExampleJob {}:{}", jobId.getId(), Thread.currentThread().getName());
+        Long timeStamp = System.currentTimeMillis();
+        try {
+            LOG.info("Executing ExampleJob {}:{}", jobId.getId(), Thread.currentThread().getName());
+            Thread.sleep(jobParameters.getDelay());
+            ExampleJobResult result = new ExampleJobResult("OK");
+            Long duration = System.currentTimeMillis() - timeStamp;
+            jobResultCache.setResult(jobId, timeStamp, duration, mapper.valueToTree(result));
+            LOG.info("Done {}:{}", jobId.getId(), Thread.currentThread().getName());
+        } catch (InterruptedException e) {
+            LOG.error("Error: ", e);
+            ExampleJobResult result = new ExampleJobResult("ERROR: " + e.getMessage());
+            Long duration = System.currentTimeMillis() - timeStamp;
+            jobResultCache.setResult(jobId, timeStamp, duration, mapper.valueToTree(result));
+        }
     }
 
 }

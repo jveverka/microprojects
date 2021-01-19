@@ -2,6 +2,7 @@ package one.microproject.scheduler.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import one.microproject.scheduler.dto.JobId;
+import one.microproject.scheduler.dto.JobResult;
 import one.microproject.scheduler.dto.JobWrapper;
 import one.microproject.scheduler.dto.ScheduleJobRequest;
 import one.microproject.scheduler.dto.ScheduledJobInfo;
@@ -13,7 +14,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -50,9 +51,12 @@ public class PeriodicSchedulerServiceImpl implements PeriodicSchedulerService, J
         JobId id = JobId.from(UUID.randomUUID().toString());
         try {
             if (provider.isPresent()) {
+                LOG.info("schedule {}", request.getTaskType());
                 Runnable job = provider.get().createJob(id, request.getTaskParameters(), this);
-                ScheduledFuture<?> scheduledFuture = executorService.scheduleAtFixedRate(job, 0L, request.getInterval(), request.getTimeUnit());
-                JobWrapper wrapper = new JobWrapper(scheduledFuture);
+                ScheduledFuture<?> scheduledFuture = executorService.scheduleAtFixedRate(job, 1L, request.getInterval(), request.getTimeUnit());
+                ScheduledJobInfo info = new ScheduledJobInfo(id, request.getTaskType(),
+                        provider.get().getTaskInfo().getName(), request.getInterval(), request.getTimeUnit(), null);
+                JobWrapper wrapper = new JobWrapper(scheduledFuture, info);
                 jobs.put(id, wrapper);
                 return Mono.just(id);
             }
@@ -64,13 +68,13 @@ public class PeriodicSchedulerServiceImpl implements PeriodicSchedulerService, J
 
     @Override
     public Flux<ScheduledJobInfo> getScheduledJobs() {
-        return null;
+        return Flux.fromStream(jobs.values().stream().map(JobWrapper::getScheduledJobInfo));
     }
 
     @Override
     public Mono<JobId> cancel(JobId jobId) {
         LOG.info("cancel {}", jobId);
-        JobWrapper jobWrapper = jobs.get(jobId);
+        JobWrapper jobWrapper = jobs.remove(jobId);
         if (jobWrapper != null) {
             jobWrapper.getScheduledFuture().cancel(true);
             return Mono.just(jobId);
@@ -79,18 +83,23 @@ public class PeriodicSchedulerServiceImpl implements PeriodicSchedulerService, J
         }
     }
 
-    @PostConstruct
+    @Override
+    public void setResult(JobId jobId, Long startedTimeStamp, Long duration, JsonNode result) {
+        LOG.info("setResult {}", jobId.getId());
+        JobWrapper jobWrapper = jobs.get(jobId);
+        if (jobWrapper != null) {
+            JobResult jobResult = new JobResult(startedTimeStamp, duration, result);
+            jobWrapper.setResult(jobResult);
+        }
+    }
+
+    @PreDestroy
     private void shutdown() throws InterruptedException {
         LOG.info("shutdown ...");
         executorService.shutdown();
         while(!executorService.awaitTermination(10, TimeUnit.SECONDS)) {
             LOG.info("waiting for executor ...");
         }
-    }
-
-    @Override
-    public void setResult(JobId jobId, JsonNode result) {
-        LOG.info("setResult {}", jobId.getId());
     }
 
 }

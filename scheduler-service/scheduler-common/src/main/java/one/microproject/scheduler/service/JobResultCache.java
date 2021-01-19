@@ -5,6 +5,6 @@ import one.microproject.scheduler.dto.JobId;
 
 public interface JobResultCache {
 
-    void setResult(JobId jobId, JsonNode result);
+    void setResult(JobId jobId, Long startedTimeStamp, Long duration, JsonNode result);
 
 }

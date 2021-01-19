@@ -25,7 +25,7 @@ public class SchedulerTests {
     @Order(0)
     public void testGetTypes() {
         EntityExchangeResult<TaskInfo[]> taskInfosExchange = webClient.get().uri("/services/tasks/types")
-                //.header("Authorization", "Bearer: " + accessToken)
+                .header("Authorization", "Bearer: " + accessToken)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(TaskInfo[].class).returnResult();

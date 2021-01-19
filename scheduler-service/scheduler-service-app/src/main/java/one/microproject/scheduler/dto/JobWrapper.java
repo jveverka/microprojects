@@ -1,29 +1,27 @@
 package one.microproject.scheduler.dto;
 
-import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 
 public class JobWrapper {
 
     private final ScheduledFuture<?> scheduledFuture;
-    private final JobResult result;
+    private ScheduledJobInfo scheduledJobInfo;
 
-    public JobWrapper(ScheduledFuture<?> scheduledFuture, JobResult result) {
+    public JobWrapper(ScheduledFuture<?> scheduledFuture, ScheduledJobInfo scheduledJobInfo) {
         this.scheduledFuture = scheduledFuture;
-        this.result = result;
-    }
-
-    public JobWrapper(ScheduledFuture<?> scheduledFuture) {
-        this.scheduledFuture = scheduledFuture;
-        this.result = null;
+        this.scheduledJobInfo = scheduledJobInfo;
     }
 
     public ScheduledFuture<?> getScheduledFuture() {
         return scheduledFuture;
     }
 
-    public Optional<JobResult> getResult() {
-        return Optional.ofNullable(result);
+    public ScheduledJobInfo getScheduledJobInfo() {
+        return scheduledJobInfo;
+    }
+
+    public void setResult(JobResult result) {
+        this.scheduledJobInfo = ScheduledJobInfo.from(scheduledJobInfo, result);
     }
 
 }
