@@ -5,23 +5,28 @@ import java.util.concurrent.ScheduledFuture;
 public class JobWrapper {
 
     private final ScheduledFuture<?> scheduledFuture;
-    private ScheduledJobInfo scheduledJobInfo;
+    private final JobId id;
+    private JobResult lastResult;
 
-    public JobWrapper(ScheduledFuture<?> scheduledFuture, ScheduledJobInfo scheduledJobInfo) {
+    public JobWrapper(ScheduledFuture<?> scheduledFuture, JobId id) {
         this.scheduledFuture = scheduledFuture;
-        this.scheduledJobInfo = scheduledJobInfo;
+        this.id = id;
+    }
+
+    public JobId getId() {
+        return id;
     }
 
     public ScheduledFuture<?> getScheduledFuture() {
         return scheduledFuture;
     }
 
-    public ScheduledJobInfo getScheduledJobInfo() {
-        return scheduledJobInfo;
+    public void setResult(JobResult result) {
+        this.lastResult = result;
     }
 
-    public void setResult(JobResult result) {
-        this.scheduledJobInfo = ScheduledJobInfo.from(scheduledJobInfo, result);
+    public JobResult getLastResult() {
+        return lastResult;
     }
 
 }

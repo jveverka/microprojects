@@ -53,14 +53,4 @@ public class ScheduledJobInfo {
         return lastResult;
     }
 
-    public static ScheduledJobInfo from(ScheduledJobInfo scheduledJobInfo, JobResult lastResult) {
-        return new ScheduledJobInfo(
-                scheduledJobInfo.jobId,
-                scheduledJobInfo.taskType,
-                scheduledJobInfo.name,
-                scheduledJobInfo.interval,
-                scheduledJobInfo.timeUnit,
-                lastResult);
-    }
-
 }

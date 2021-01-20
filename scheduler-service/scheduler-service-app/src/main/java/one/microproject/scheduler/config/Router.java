@@ -16,7 +16,7 @@ import reactor.core.publisher.Mono;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.web.reactive.function.server.RequestPredicates.GET;
 import static org.springframework.web.reactive.function.server.RequestPredicates.POST;
-import static org.springframework.web.reactive.function.server.RequestPredicates.PUT;
+import static org.springframework.web.reactive.function.server.RequestPredicates.DELETE;
 import static org.springframework.web.reactive.function.server.RequestPredicates.accept;
 
 @Configuration
@@ -38,7 +38,7 @@ public class Router {
                     Flux<ScheduledJobInfo> dataSeriesInfoMono = periodicSchedulerService.getScheduledJobs();
                     return ServerResponse.ok().body(dataSeriesInfoMono, ScheduledJobInfo.class);
                 })
-                .andRoute(PUT("/services/jobs/cancel/{job-id}").and(accept(APPLICATION_JSON)), request -> {
+                .andRoute(DELETE("/services/jobs/cancel/{job-id}").and(accept(APPLICATION_JSON)), request -> {
                     JobId jobId = JobId.from(request.pathVariable("job-id"));
                     Mono<JobId> mono = periodicSchedulerService.cancel(jobId);
                     return ServerResponse.ok().body(mono, JobId.class);
