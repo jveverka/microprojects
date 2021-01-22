@@ -54,27 +54,25 @@ public class PeriodicSchedulerServiceImpl implements PeriodicSchedulerService, J
     @PostConstruct
     public void init() {
         LOG.info("init ...");
-        /*
         scheduledJobRepository.findAll().toStream().forEach(s -> {
+            LOG.info("  job init {}", s.getId());
             try {
-                LOG.info("  job init {}", s.getId());
                 Optional<JobProvider> provider = providerFactoryService.get(s.getTaskType());
                 if (provider.isPresent()) {
                     LOG.info("  job init schedule {}", s.getTaskType());
                     JobId id = JobId.from(s.getId());
-                    Runnable job = provider.get().createJob(id, s.getTaskParameters(), this);
+                    JsonNode jsonNode = mapper.readTree(s.getTaskParameters());
+                    Runnable job = provider.get().createJob(id, jsonNode, this);
                     ScheduledFuture<?> scheduledFuture = executorService.scheduleAtFixedRate(job, 1L, s.getInterval(), s.getTimeUnit());
                     JobWrapper wrapper = new JobWrapper(scheduledFuture, id);
                     jobs.put(id, wrapper);
                 } else {
                     LOG.info("  job init ERROR: no TaskType={} provided", s.getTaskType());
                 }
-            } catch (CreateJobException e) {
+            } catch (JsonProcessingException | CreateJobException e) {
                 LOG.warn("Failed to create Job {}", s.getId());
             }
         });
-
-         */
     }
 
     @Override

@@ -14,19 +14,24 @@ import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.lang.NonNull;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.reactive.server.EntityExchangeResult;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.MongoDBContainer;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@Testcontainers
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@ContextConfiguration(initializers = SchedulerTests.Initializer.class)
 public class SchedulerTests {
 
     private static final int DOCKER_EXPOSED_MONGO_PORT = 27017;
     private static final String MONGO_DOCKER_IMAGE = "mongo:4.2.9";
+
+    private static MongoDBContainer mongoDBContainer;
 
     @Autowired
     private WebTestClient webClient;
@@ -59,7 +64,7 @@ public class SchedulerTests {
 
             mongoDBContainer.start();
             Assertions.assertTrue(mongoDBContainer.isRunning());
-            //SchedulerTests.mongoDBContainer = mongoDBContainer;
+            SchedulerTests.mongoDBContainer = mongoDBContainer;
             Integer boundPort = mongoDBContainer.getMappedPort(DOCKER_EXPOSED_MONGO_PORT);
 
             LOGGER.info("MONGO      : {}", mongoDBContainer.getReplicaSetUrl());
