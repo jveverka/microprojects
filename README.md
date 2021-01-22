@@ -17,5 +17,5 @@ Collection of various micro-projects.
 
 ### Build and Test
 ```
-gradle clean install test publishToMavenLocal
+gradle clean build test publishToMavenLocal
 ```
