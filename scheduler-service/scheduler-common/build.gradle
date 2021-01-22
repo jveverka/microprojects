@@ -1,10 +1,26 @@
 
+apply plugin: 'java'
+apply plugin: 'maven'
+apply plugin: 'maven-publish'
+
 group = 'one.microproject.scheduler'
-version = '0.0.1-SNAPSHOT'
+version = '1.0.0-SNAPSHOT'
 sourceCompatibility = '11'
 
 repositories {
     mavenCentral()
+    mavenLocal()
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId = 'one.microproject.scheduler'
+            artifactId = 'scheduler-common'
+            version = '1.0.0-SNAPSHOT'
+            from components.java
+        }
+    }
 }
 
 dependencies {
