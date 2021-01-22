@@ -15,3 +15,7 @@ Collection of various micro-projects.
 * [Mongo setup](docs/mongo-setup.md)
 * [Local Docker Registry](docs/local-docker-registry-setup.md)
 
+### Build and Test
+```
+gradle clean install test publishToMavenLocal
+```
