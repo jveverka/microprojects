@@ -57,11 +57,11 @@ public class PeriodicSchedulerServiceImpl implements PeriodicSchedulerService, J
         scheduledJobRepository.findAll().toStream().forEach(s -> {
             LOG.info("  job init {}", s.getId());
             try {
+                JobId id = JobId.from(s.getId());
+                JsonNode jsonNode = mapper.readTree(s.getTaskParameters());
                 Optional<JobProvider> provider = providerFactoryService.get(s.getTaskType());
                 if (provider.isPresent()) {
                     LOG.info("  job init schedule {}", s.getTaskType());
-                    JobId id = JobId.from(s.getId());
-                    JsonNode jsonNode = mapper.readTree(s.getTaskParameters());
                     Runnable job = provider.get().createJob(id, jsonNode, this);
                     ScheduledFuture<?> scheduledFuture = executorService.scheduleAtFixedRate(job, 1L, s.getInterval(), s.getTimeUnit());
                     JobWrapper wrapper = new JobWrapper(scheduledFuture, id);
@@ -83,9 +83,9 @@ public class PeriodicSchedulerServiceImpl implements PeriodicSchedulerService, J
     @Override
     @Transactional
     public Mono<JobId> schedule(ScheduleJobRequest request) {
-        Optional<JobProvider> provider = providerFactoryService.get(request.getTaskType());
         JobId id = JobId.from(UUID.randomUUID().toString());
         try {
+            Optional<JobProvider> provider = providerFactoryService.get(request.getTaskType());
             if (provider.isPresent()) {
                 LOG.info("schedule {}", request.getTaskType());
                 Runnable job = provider.get().createJob(id, request.getTaskParameters(), this);
