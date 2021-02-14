@@ -5,6 +5,13 @@ This project is __WIP__ !
 * Provides event history and statistics.
 * Uses OAuth2 security model provided by [iam-service](https://github.com/jveverka/iam-service).
 
+### Rest APIs
+#### Data Series - APIs
+* __GET__ ``/services/series``
+* __POST__ ``/services/series``
+* __DELETE__ ``/services/series/{groupId}/{name}``
+* __GET__ ``/services/series/{groupId}/{name}`` 
+
 ### Build, Test & Run 
 ```
 gradle clean build test
