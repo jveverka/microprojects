@@ -12,6 +12,13 @@ This project is __WIP__ !
 * __DELETE__ ``/services/series/{groupId}/{name}``
 * __GET__ ``/services/series/{groupId}/{name}`` 
 
+#### Data Records - APIs
+* __GET__ ``/services/records/{groupId}/{name}``
+* __GET__ ``/services/records/{groupId}/{name}/{startTime}/{duration}``
+* __POST__ ``/services/records``
+* __PUT__ ``/services/records``
+* __DELETE__ ``/services/records/{groupId}/{name}/{timeStamp}``
+
 ### Build, Test & Run 
 ```
 gradle clean build test

@@ -37,7 +37,7 @@ public class Router {
     public RouterFunction<ServerResponse> route(DataSeriesService dataSeriesService,
                                                 DataRecordService dataRecordService) {
         return RouterFunctions
-                //Data Series - APIs
+                // Data Series - APIs
                 .route(GET("/services/series").and(accept(APPLICATION_JSON)), request -> {
                     Flux<DataSeriesInfo> dataSeriesInfoFlux = dataSeriesService.getAll();
                     return ServerResponse.ok().body(dataSeriesInfoFlux, DataSeriesInfo.class);
