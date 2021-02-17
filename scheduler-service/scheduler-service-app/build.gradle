@@ -25,8 +25,8 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'io.projectreactor:reactor-test'
     testImplementation 'org.springframework.security:spring-security-test'
-    testImplementation 'org.testcontainers:junit-jupiter:1.15.1'
-    testImplementation 'org.testcontainers:mongodb:1.15.1'
+    testImplementation 'org.testcontainers:junit-jupiter:1.15.2'
+    testImplementation 'org.testcontainers:mongodb:1.15.2'
     testImplementation 'one.microproject.iamservice:iam-service-client:2.5.1-RELEASE'
     testImplementation 'com.squareup.okhttp3:okhttp:4.9.0'
 
