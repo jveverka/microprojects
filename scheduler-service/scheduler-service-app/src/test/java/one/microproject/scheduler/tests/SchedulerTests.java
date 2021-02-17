@@ -29,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class SchedulerTests {
 
     private static final int DOCKER_EXPOSED_MONGO_PORT = 27017;
-    private static final String MONGO_DOCKER_IMAGE = "mongo:4.2.9";
+    private static final String MONGO_DOCKER_IMAGE = "mongo:4.2.12";
 
     private static MongoDBContainer mongoDBContainer;
 
