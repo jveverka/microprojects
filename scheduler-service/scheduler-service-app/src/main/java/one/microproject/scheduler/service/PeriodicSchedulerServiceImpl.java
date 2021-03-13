@@ -62,6 +62,7 @@ public class PeriodicSchedulerServiceImpl implements PeriodicSchedulerService, J
                 Optional<JobProvider> provider = providerFactoryService.get(s.getTaskType());
                 if (provider.isPresent()) {
                     LOG.info("  job init schedule {}", s.getTaskType());
+                    //TODO: check the start date
                     Runnable job = provider.get().createJob(id, jsonNode, this);
                     ScheduledFuture<?> scheduledFuture = executorService.scheduleAtFixedRate(job, 1L, s.getInterval(), s.getTimeUnit());
                     JobWrapper wrapper = new JobWrapper(scheduledFuture, id);
@@ -88,12 +89,14 @@ public class PeriodicSchedulerServiceImpl implements PeriodicSchedulerService, J
             Optional<JobProvider> provider = providerFactoryService.get(request.getTaskType());
             if (provider.isPresent()) {
                 LOG.info("schedule {}", request.getTaskType());
+                //TODO: check the start date
                 Runnable job = provider.get().createJob(id, request.getTaskParameters(), this);
                 ScheduledFuture<?> scheduledFuture = executorService.scheduleAtFixedRate(job, 1L, request.getInterval(), request.getTimeUnit());
                 JobWrapper wrapper = new JobWrapper(scheduledFuture, id);
                 String parameters = mapper.writeValueAsString(request.getTaskParameters());
-                ScheduledJob scheduledJob = new ScheduledJob(id.getId(), request.getTaskType(), provider.get().getTaskInfo().getName(),
-                        request.getInterval(), request.getTimeUnit(), parameters);
+                ScheduledJob scheduledJob = new ScheduledJob(id.getId(), request.getTaskType(),
+                        request.getStartDate(), provider.get().getTaskInfo().getName(),
+                        request.getInterval(), request.getTimeUnit(), request.getRepeat(), 0L,  parameters);
                 jobs.put(id, wrapper);
                 Mono<ScheduledJob> saved = scheduledJobRepository.save(scheduledJob);
                 return saved.transform(mono -> mono.map( m -> JobId.from(m.getId())));
@@ -145,9 +148,13 @@ public class PeriodicSchedulerServiceImpl implements PeriodicSchedulerService, J
         JobId id = JobId.from(scheduledJob.getId());
         JobWrapper wrapper = jobs.get(id);
         if (wrapper !=  null) {
-            return new ScheduledJobInfo(id, scheduledJob.getTaskType(), scheduledJob.getName(), scheduledJob.getInterval(), scheduledJob.getTimeUnit(), wrapper.getLastResult());
+            return new ScheduledJobInfo(id, scheduledJob.getTaskType(), scheduledJob.getStartDate(), scheduledJob.getName(),
+                    scheduledJob.getInterval(), scheduledJob.getCounter(), scheduledJob.getCounter(),
+                    scheduledJob.getTimeUnit(), wrapper.getLastResult());
         } else {
-            return new ScheduledJobInfo(id, scheduledJob.getTaskType(), scheduledJob.getName(), scheduledJob.getInterval(), scheduledJob.getTimeUnit(), null);
+            return new ScheduledJobInfo(id, scheduledJob.getTaskType(), scheduledJob.getStartDate(), scheduledJob.getName(),
+                    scheduledJob.getInterval(), scheduledJob.getCounter(), scheduledJob.getCounter(),
+                    scheduledJob.getTimeUnit(), null);
         }
     }
 

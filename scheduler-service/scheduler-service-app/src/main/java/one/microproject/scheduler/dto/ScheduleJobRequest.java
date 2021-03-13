@@ -9,18 +9,24 @@ import java.util.concurrent.TimeUnit;
 public class ScheduleJobRequest {
 
     private final String taskType;
+    private final Long startDate;
     private final Long interval;
     private final TimeUnit timeUnit;
+    private final Long repeat;
     private final JsonNode taskParameters;
 
     @JsonCreator
     public ScheduleJobRequest(@JsonProperty("taskType") String taskType,
+                              @JsonProperty("startDate") Long startDate,
                               @JsonProperty("interval") Long interval,
                               @JsonProperty("timeUnit") TimeUnit timeUnit,
+                              @JsonProperty("repeat") Long repeat,
                               @JsonProperty("taskParameters") JsonNode taskParameters) {
         this.taskType = taskType;
+        this.startDate =  startDate;
         this.interval = interval;
         this.timeUnit = timeUnit;
+        this.repeat = repeat;
         this.taskParameters = taskParameters;
     }
 
@@ -38,6 +44,14 @@ public class ScheduleJobRequest {
 
     public JsonNode getTaskParameters() {
         return taskParameters;
+    }
+
+    public Long getStartDate() {
+        return startDate;
+    }
+
+    public Long getRepeat() {
+        return repeat;
     }
 
 }

@@ -13,10 +13,10 @@ docker-compose down -v --rmi all --remove-orphans
 ```
 
 ## Rest endpoints
-* __GET__ ``/services/tasks/types``
-* __POST__ ``/services/tasks/schedule``
-* __GET__ ``/services/jobs``  
-* __DELETE__ ``/services/jobs/cancel/{job-id}``
+* __GET__ ``/services/tasks/types`` - get available task types.
+* __POST__ ``/services/tasks/schedule`` - schedule job instance of task type.
+* __GET__ ``/services/jobs`` - get scheduled/running jobs.  
+* __DELETE__ ``/services/jobs/{job-id}`` -  cancel  scheduled/running job.
 
 ## Adding external task implementation
 The __scheduler-service__ is able to load an implementation of 

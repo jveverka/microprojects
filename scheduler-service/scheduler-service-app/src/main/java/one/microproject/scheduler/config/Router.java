@@ -38,7 +38,7 @@ public class Router {
                     Flux<ScheduledJobInfo> dataSeriesInfoMono = periodicSchedulerService.getScheduledJobs();
                     return ServerResponse.ok().body(dataSeriesInfoMono, ScheduledJobInfo.class);
                 })
-                .andRoute(DELETE("/services/jobs/cancel/{job-id}").and(accept(APPLICATION_JSON)), request -> {
+                .andRoute(DELETE("/services/jobs/{job-id}").and(accept(APPLICATION_JSON)), request -> {
                     JobId jobId = JobId.from(request.pathVariable("job-id"));
                     Mono<JobId> mono = periodicSchedulerService.cancel(jobId);
                     return ServerResponse.ok().body(mono, JobId.class);
