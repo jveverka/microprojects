@@ -125,6 +125,7 @@ public class PeriodicSchedulerServiceImpl implements PeriodicSchedulerService, J
     }
 
     @Override
+    @Transactional
     public void setResult(JobId jobId, Long startedTimeStamp, Long duration, JsonNode result) {
         LOG.info("setResult {}", jobId.getId());
         JobWrapper jobWrapper = jobs.get(jobId);
@@ -132,6 +133,16 @@ public class PeriodicSchedulerServiceImpl implements PeriodicSchedulerService, J
             JobResult jobResult = new JobResult(startedTimeStamp, duration, result);
             jobWrapper.setResult(jobResult);
         }
+        Mono<ScheduledJob> jobMono = scheduledJobRepository.findById(jobId.getId());
+        jobMono.subscribe(s -> {
+            s.setCounter(s.getCounter() + 1);
+            LOG.info("updating counter {}/{}", jobId.getId(), s.getCounter());
+            Mono<ScheduledJob> save = scheduledJobRepository.save(s);
+            save.subscribe(c -> LOG.info("updated counter {}/{}", jobId.getId(), c.getCounter()));
+            if (s.getRepeat() > 0 && s.getCounter() >= s.getRepeat()) {
+                cancel(jobId).subscribe();
+            }
+        });
     }
 
     @PreDestroy
@@ -149,11 +160,11 @@ public class PeriodicSchedulerServiceImpl implements PeriodicSchedulerService, J
         JobWrapper wrapper = jobs.get(id);
         if (wrapper !=  null) {
             return new ScheduledJobInfo(id, scheduledJob.getTaskType(), scheduledJob.getStartDate(), scheduledJob.getName(),
-                    scheduledJob.getInterval(), scheduledJob.getCounter(), scheduledJob.getCounter(),
+                    scheduledJob.getInterval(), scheduledJob.getRepeat(), scheduledJob.getCounter(),
                     scheduledJob.getTimeUnit(), wrapper.getLastResult());
         } else {
             return new ScheduledJobInfo(id, scheduledJob.getTaskType(), scheduledJob.getStartDate(), scheduledJob.getName(),
-                    scheduledJob.getInterval(), scheduledJob.getCounter(), scheduledJob.getCounter(),
+                    scheduledJob.getInterval(), scheduledJob.getRepeat(), scheduledJob.getCounter(),
                     scheduledJob.getTimeUnit(), null);
         }
     }
