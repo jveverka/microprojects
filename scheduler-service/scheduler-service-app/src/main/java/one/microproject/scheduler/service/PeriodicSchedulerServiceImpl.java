@@ -26,9 +26,7 @@ import javax.annotation.PreDestroy;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -117,7 +115,7 @@ public class PeriodicSchedulerServiceImpl implements PeriodicSchedulerService, J
 
     @Override
     public Flux<ScheduledJobInfo> getScheduledJobs() {
-        return scheduledJobRepository.findAll().transform(flux -> flux.map(this::transform));
+        return scheduledJobRepository.findAll().transform(this::transformScheduledJobFlux);
     }
 
     @Override
@@ -129,6 +127,7 @@ public class PeriodicSchedulerServiceImpl implements PeriodicSchedulerService, J
         if (jobWrapper != null) {
             jobWrapper.getScheduledFuture().cancel(true);
         }
+        resultService.statusUpdate(jobId, JobStatus.TERMINATED).subscribe();
         return deleted.transform(mono -> mono.map( m -> jobId));
     }
 
@@ -158,36 +157,30 @@ public class PeriodicSchedulerServiceImpl implements PeriodicSchedulerService, J
         }
     }
 
-    private ScheduledJobInfo transform(ScheduledJob scheduledJob) {
-        LOG.info("transform: {}", scheduledJob.getId());
-        JobId id = JobId.from(scheduledJob.getId());
-        JobWrapper wrapper = jobs.get(id);
-        if (wrapper !=  null) {
-            return new ScheduledJobInfo(id, scheduledJob.getTaskType(), scheduledJob.getStartDate(), scheduledJob.getName(),
-                    scheduledJob.getInterval(), scheduledJob.getRepeat(), scheduledJob.getCounter(),
-                    scheduledJob.getTimeUnit(), null /* TODO transform(id)*/);
-        } else {
-            return new ScheduledJobInfo(id, scheduledJob.getTaskType(), scheduledJob.getStartDate(), scheduledJob.getName(),
-                    scheduledJob.getInterval(), scheduledJob.getRepeat(), scheduledJob.getCounter(),
-                    scheduledJob.getTimeUnit(), null);
-        }
+    private Flux<ScheduledJobInfo> transformScheduledJobFlux(Flux<ScheduledJob> scheduledJobFlux) {
+        return scheduledJobFlux.concatMap(c -> transformScheduledJob(c));
     }
 
-    /*
+    private Mono<ScheduledJobInfo> transformScheduledJob(ScheduledJob scheduledJob) {
+        LOG.info("transform: {}", scheduledJob.getId());
+        JobId id = JobId.from(scheduledJob.getId());
+        return  resultService.get(id).map(m -> {
+            JobWrapper wrapper = jobs.get(id);
+            if (wrapper !=  null) {
+                return new ScheduledJobInfo(id, scheduledJob.getTaskType(), scheduledJob.getStartDate(), scheduledJob.getName(),
+                        scheduledJob.getInterval(), scheduledJob.getRepeat(), scheduledJob.getCounter(),
+                        scheduledJob.getTimeUnit(), transform(m));
+            } else {
+                return new ScheduledJobInfo(id, scheduledJob.getTaskType(), scheduledJob.getStartDate(), scheduledJob.getName(),
+                        scheduledJob.getInterval(), scheduledJob.getRepeat(), scheduledJob.getCounter(),
+                        scheduledJob.getTimeUnit(), null);
+            }
+        });
+    }
+
     private JobResultData transform(JobResultInfo jobResultInfo) {
         return new JobResultData(jobResultInfo.getStartedTimeStamp(), jobResultInfo.getDuration(), jobResultInfo.getResult());
     }
-
-    private JobResultData transform(JobId id) {
-        try {
-            CompletableFuture<JobResultData> future = new CompletableFuture<>();
-            resultService.get(id).subscribe(j -> future.complete(transform(j)) );
-            return future.get();
-        } catch (ExecutionException | InterruptedException e) {
-            return null;
-        }
-    }
-    */
 
     private JobResultInfo transformToJobResultInfo(ScheduledJob scheduledJob, Long startedTimeStamp,
                                                    Long duration, JobStatus status, JsonNode result) {

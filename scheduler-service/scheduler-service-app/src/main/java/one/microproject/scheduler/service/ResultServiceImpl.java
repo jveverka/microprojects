@@ -3,6 +3,7 @@ package one.microproject.scheduler.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import one.microproject.scheduler.dto.JobId;
 import one.microproject.scheduler.dto.JobResultInfo;
+import one.microproject.scheduler.dto.JobStatus;
 import one.microproject.scheduler.model.JobResult;
 import one.microproject.scheduler.repository.JobResultRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +50,16 @@ public class ResultServiceImpl implements ResultService {
     public Mono<JobId> delete(JobId jobId) {
         Mono<Void> deleted = jobResultRepository.deleteById(jobId.getId());
         return deleted.transform(mono -> mono.map( m -> jobId));
+    }
+
+    @Override
+    @Transactional
+    public Mono<JobResultInfo> statusUpdate(JobId jobId, JobStatus status) {
+        jobResultRepository.findById(jobId.getId()).subscribe(r -> {
+            r.setStatus(status);
+            jobResultRepository.save(r).subscribe();
+        });
+        return jobResultRepository.findById(jobId.getId()).transform(mono -> mono.map(this::transform));
     }
 
     private JobResultInfo transform(JobResult jobResult) throws JsonFormatException {

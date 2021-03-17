@@ -1,6 +1,5 @@
 package one.microproject.scheduler.model;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import one.microproject.scheduler.dto.JobStatus;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
