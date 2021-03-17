@@ -4,7 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import one.microproject.scheduler.dto.JobId;
-import one.microproject.scheduler.dto.JobResult;
+import one.microproject.scheduler.dto.JobResultData;
+import one.microproject.scheduler.dto.JobResultInfo;
+import one.microproject.scheduler.dto.JobStatus;
 import one.microproject.scheduler.dto.JobWrapper;
 import one.microproject.scheduler.dto.ScheduleJobRequest;
 import one.microproject.scheduler.dto.ScheduledJobInfo;
@@ -24,13 +26,16 @@ import javax.annotation.PreDestroy;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 @Service
+@Transactional(readOnly = true)
 public class PeriodicSchedulerServiceImpl implements PeriodicSchedulerService, JobResultCache {
 
     private static final Logger LOG = LoggerFactory.getLogger(PeriodicSchedulerServiceImpl.class);
@@ -40,15 +45,18 @@ public class PeriodicSchedulerServiceImpl implements PeriodicSchedulerService, J
     private final Map<JobId, JobWrapper> jobs;
     private final ScheduledJobRepository scheduledJobRepository;
     private final ObjectMapper mapper;
+    private final ResultService resultService;
 
     @Autowired
     public PeriodicSchedulerServiceImpl(ScheduledJobRepository scheduledJobRepository,
-                                        ProviderFactoryService providerFactoryService) {
+                                        ProviderFactoryService providerFactoryService,
+                                        ResultService resultService) {
         this.executorService = Executors.newScheduledThreadPool(8);
         this.providerFactoryService = providerFactoryService;
         this.scheduledJobRepository = scheduledJobRepository;
         this.jobs = new ConcurrentHashMap<>();
         this.mapper = new ObjectMapper();
+        this.resultService = resultService;
     }
 
     @PostConstruct
@@ -109,7 +117,7 @@ public class PeriodicSchedulerServiceImpl implements PeriodicSchedulerService, J
 
     @Override
     public Flux<ScheduledJobInfo> getScheduledJobs() {
-        return scheduledJobRepository.findAll().transform(flux -> flux.map( f -> transform(f)));
+        return scheduledJobRepository.findAll().transform(flux -> flux.map(this::transform));
     }
 
     @Override
@@ -128,13 +136,9 @@ public class PeriodicSchedulerServiceImpl implements PeriodicSchedulerService, J
     @Transactional
     public void setResult(JobId jobId, Long startedTimeStamp, Long duration, JsonNode result) {
         LOG.info("setResult {}", jobId.getId());
-        JobWrapper jobWrapper = jobs.get(jobId);
-        if (jobWrapper != null) {
-            JobResult jobResult = new JobResult(startedTimeStamp, duration, result);
-            jobWrapper.setResult(jobResult);
-        }
         Mono<ScheduledJob> jobMono = scheduledJobRepository.findById(jobId.getId());
         jobMono.subscribe(s -> {
+            resultService.save(transformToJobResultInfo(s, startedTimeStamp, duration, JobStatus.RUNNING, result)).subscribe();
             s.setCounter(s.getCounter() + 1);
             LOG.info("updating counter {}/{}", jobId.getId(), s.getCounter());
             Mono<ScheduledJob> save = scheduledJobRepository.save(s);
@@ -161,12 +165,33 @@ public class PeriodicSchedulerServiceImpl implements PeriodicSchedulerService, J
         if (wrapper !=  null) {
             return new ScheduledJobInfo(id, scheduledJob.getTaskType(), scheduledJob.getStartDate(), scheduledJob.getName(),
                     scheduledJob.getInterval(), scheduledJob.getRepeat(), scheduledJob.getCounter(),
-                    scheduledJob.getTimeUnit(), wrapper.getLastResult());
+                    scheduledJob.getTimeUnit(), null /* TODO transform(id)*/);
         } else {
             return new ScheduledJobInfo(id, scheduledJob.getTaskType(), scheduledJob.getStartDate(), scheduledJob.getName(),
                     scheduledJob.getInterval(), scheduledJob.getRepeat(), scheduledJob.getCounter(),
                     scheduledJob.getTimeUnit(), null);
         }
+    }
+
+    /*
+    private JobResultData transform(JobResultInfo jobResultInfo) {
+        return new JobResultData(jobResultInfo.getStartedTimeStamp(), jobResultInfo.getDuration(), jobResultInfo.getResult());
+    }
+
+    private JobResultData transform(JobId id) {
+        try {
+            CompletableFuture<JobResultData> future = new CompletableFuture<>();
+            resultService.get(id).subscribe(j -> future.complete(transform(j)) );
+            return future.get();
+        } catch (ExecutionException | InterruptedException e) {
+            return null;
+        }
+    }
+    */
+
+    private JobResultInfo transformToJobResultInfo(ScheduledJob scheduledJob, Long startedTimeStamp,
+                                                   Long duration, JobStatus status, JsonNode result) {
+        return new JobResultInfo(JobId.from(scheduledJob.getId()), scheduledJob.getTaskType(), startedTimeStamp, duration, status, result);
     }
 
 }

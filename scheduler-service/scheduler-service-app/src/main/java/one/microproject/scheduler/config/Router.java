@@ -1,10 +1,12 @@
 package one.microproject.scheduler.config;
 
 import one.microproject.scheduler.dto.JobId;
+import one.microproject.scheduler.dto.JobResultInfo;
 import one.microproject.scheduler.dto.ScheduleJobRequest;
 import one.microproject.scheduler.dto.ScheduledJobInfo;
 import one.microproject.scheduler.dto.TaskInfo;
 import one.microproject.scheduler.service.PeriodicSchedulerService;
+import one.microproject.scheduler.service.ResultService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.server.RouterFunction;
@@ -23,7 +25,7 @@ import static org.springframework.web.reactive.function.server.RequestPredicates
 public class Router {
 
     @Bean
-    public RouterFunction<ServerResponse> route(PeriodicSchedulerService periodicSchedulerService) {
+    public RouterFunction<ServerResponse> route(PeriodicSchedulerService periodicSchedulerService, ResultService resultService) {
         return RouterFunctions
                 .route(GET("/services/tasks/types").and(accept(APPLICATION_JSON)), request -> {
                     Flux<TaskInfo> types = periodicSchedulerService.getTypes();
@@ -35,12 +37,26 @@ public class Router {
                     return ServerResponse.ok().body(genericResponseMono, JobId.class);
                 })
                 .andRoute(GET("/services/jobs").and(accept(APPLICATION_JSON)), request -> {
-                    Flux<ScheduledJobInfo> dataSeriesInfoMono = periodicSchedulerService.getScheduledJobs();
-                    return ServerResponse.ok().body(dataSeriesInfoMono, ScheduledJobInfo.class);
+                    Flux<ScheduledJobInfo> dataSeriesInfoFlux = periodicSchedulerService.getScheduledJobs();
+                    return ServerResponse.ok().body(dataSeriesInfoFlux, ScheduledJobInfo.class);
                 })
                 .andRoute(DELETE("/services/jobs/{job-id}").and(accept(APPLICATION_JSON)), request -> {
                     JobId jobId = JobId.from(request.pathVariable("job-id"));
                     Mono<JobId> mono = periodicSchedulerService.cancel(jobId);
+                    return ServerResponse.ok().body(mono, JobId.class);
+                })
+                .andRoute(GET("/services/results").and(accept(APPLICATION_JSON)), request -> {
+                    Flux<JobResultInfo> jobResultInfoFlux = resultService.getAll();
+                    return ServerResponse.ok().body(jobResultInfoFlux, JobResultInfo.class);
+                })
+                .andRoute(GET("/services/results/{job-id}").and(accept(APPLICATION_JSON)), request -> {
+                    JobId jobId = JobId.from(request.pathVariable("job-id"));
+                    Mono<JobResultInfo> jobResultInfoMono = resultService.get(jobId);
+                    return ServerResponse.ok().body(jobResultInfoMono, JobResultInfo.class);
+                })
+                .andRoute(DELETE("/services/results/{job-id}").and(accept(APPLICATION_JSON)), request -> {
+                    JobId jobId = JobId.from(request.pathVariable("job-id"));
+                    Mono<JobId> mono = resultService.delete(jobId);
                     return ServerResponse.ok().body(mono, JobId.class);
                 });
     }

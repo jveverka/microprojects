@@ -6,7 +6,6 @@ public class JobWrapper {
 
     private final ScheduledFuture<?> scheduledFuture;
     private final JobId id;
-    private JobResult lastResult;
 
     public JobWrapper(ScheduledFuture<?> scheduledFuture, JobId id) {
         this.scheduledFuture = scheduledFuture;
@@ -19,14 +18,6 @@ public class JobWrapper {
 
     public ScheduledFuture<?> getScheduledFuture() {
         return scheduledFuture;
-    }
-
-    public void setResult(JobResult result) {
-        this.lastResult = result;
-    }
-
-    public JobResult getLastResult() {
-        return lastResult;
     }
 
 }

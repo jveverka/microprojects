@@ -15,7 +15,7 @@ public class ScheduledJobInfo {
     private final Long repeat;
     private final Long counter;
     private final TimeUnit timeUnit;
-    private final JobResult lastResult;
+    private final JobResultData lastResult;
 
     @JsonCreator
     public ScheduledJobInfo(@JsonProperty("jobId") JobId jobId,
@@ -26,7 +26,7 @@ public class ScheduledJobInfo {
                             @JsonProperty("repeat") Long repeat,
                             @JsonProperty("counter") Long counter,
                             @JsonProperty("timeUnit") TimeUnit timeUnit,
-                            @JsonProperty("lastResult") JobResult lastResult) {
+                            @JsonProperty("lastResult") JobResultData lastResult) {
         this.jobId = jobId;
         this.taskType = taskType;
         this.startDate = startDate;
@@ -58,7 +58,7 @@ public class ScheduledJobInfo {
         return timeUnit;
     }
 
-    public JobResult getLastResult() {
+    public JobResultData getLastResult() {
         return lastResult;
     }
 

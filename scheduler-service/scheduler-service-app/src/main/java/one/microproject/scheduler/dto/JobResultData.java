@@ -4,16 +4,16 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 
-public class JobResult {
+public class JobResultData {
 
     private final Long startedTimeStamp;
     private final Long duration;
     private final JsonNode result;
 
     @JsonCreator
-    public JobResult(@JsonProperty("startedTimeStamp") Long startedTimeStamp,
-                     @JsonProperty("duration") Long duration,
-                     @JsonProperty("result") JsonNode result) {
+    public JobResultData(@JsonProperty("startedTimeStamp") Long startedTimeStamp,
+                         @JsonProperty("duration") Long duration,
+                         @JsonProperty("result") JsonNode result) {
         this.startedTimeStamp = startedTimeStamp;
         this.duration = duration;
         this.result = result;
