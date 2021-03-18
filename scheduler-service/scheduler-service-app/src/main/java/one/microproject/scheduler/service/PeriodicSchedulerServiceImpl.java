@@ -115,7 +115,7 @@ public class PeriodicSchedulerServiceImpl implements PeriodicSchedulerService, J
 
     @Override
     public Flux<ScheduledJobInfo> getScheduledJobs() {
-        return scheduledJobRepository.findAll().transform(this::transformScheduledJobFlux);
+        return scheduledJobRepository.findAll().transform(f -> f.concatMap(this::transformScheduledJob));
     }
 
     @Override
@@ -155,10 +155,6 @@ public class PeriodicSchedulerServiceImpl implements PeriodicSchedulerService, J
         while(!executorService.awaitTermination(10, TimeUnit.SECONDS)) {
             LOG.info("waiting for executor ...");
         }
-    }
-
-    private Flux<ScheduledJobInfo> transformScheduledJobFlux(Flux<ScheduledJob> scheduledJobFlux) {
-        return scheduledJobFlux.concatMap(c -> transformScheduledJob(c));
     }
 
     private Mono<ScheduledJobInfo> transformScheduledJob(ScheduledJob scheduledJob) {
