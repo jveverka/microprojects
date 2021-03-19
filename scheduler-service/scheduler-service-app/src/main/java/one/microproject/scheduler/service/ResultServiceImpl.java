@@ -65,7 +65,7 @@ public class ResultServiceImpl implements ResultService {
     private JobResultInfo transform(JobResult jobResult) throws JsonFormatException {
         try {
             return new JobResultInfo(JobId.from(jobResult.getId()), jobResult.getTaskType(),
-                    jobResult.getStartedTimeStamp(), jobResult.getDuration(), jobResult.getStatus(),
+                    jobResult.getStartedTimeStamp(), jobResult.getDuration(), jobResult.getStatus(), jobResult.getCode(),
                     mapper.readTree(jobResult.getResult()));
         } catch (IOException e) {
             throw new JsonFormatException(e);
@@ -75,7 +75,7 @@ public class ResultServiceImpl implements ResultService {
     private JobResult transform(JobResultInfo jobResultInfo) throws JsonFormatException {
         try {
             return new JobResult(jobResultInfo.getId().getId(), jobResultInfo.getTaskType(),
-                    jobResultInfo.getStartedTimeStamp(), jobResultInfo.getDuration(), jobResultInfo.getStatus(),
+                    jobResultInfo.getStartedTimeStamp(), jobResultInfo.getDuration(), jobResultInfo.getStatus(), jobResultInfo.getCode(),
                     mapper.writeValueAsString(jobResultInfo.getResult()));
         } catch (IOException e) {
             throw new JsonFormatException(e);

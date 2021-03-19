@@ -1,6 +1,7 @@
 package one.microproject.scheduler.model;
 
 import one.microproject.scheduler.dto.JobStatus;
+import one.microproject.scheduler.dto.ResultCode;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -13,17 +14,19 @@ public class JobResult {
     private Long startedTimeStamp;
     private Long duration;
     private JobStatus status;
+    private ResultCode code;
     private String result;
 
     public JobResult() {
     }
 
-    public JobResult(String id, String taskType, Long startedTimeStamp, Long duration, JobStatus status, String result) {
+    public JobResult(String id, String taskType, Long startedTimeStamp, Long duration, JobStatus status, ResultCode code, String result) {
         this.id = id;
         this.taskType = taskType;
         this.startedTimeStamp = startedTimeStamp;
         this.duration = duration;
         this.status = status;
+        this.code = code;
         this.result = result;
     }
 
@@ -73,6 +76,14 @@ public class JobResult {
 
     public void setResult(String result) {
         this.result = result;
+    }
+
+    public ResultCode getCode() {
+        return code;
+    }
+
+    public void setCode(ResultCode code) {
+        this.code = code;
     }
 
 }

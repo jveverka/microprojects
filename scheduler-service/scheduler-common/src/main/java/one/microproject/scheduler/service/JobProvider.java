@@ -8,6 +8,6 @@ public interface JobProvider {
 
     TaskInfo getTaskInfo();
 
-    Runnable createJob(JobId jobId, JsonNode taskParameters, JobResultCache jobResultCache) throws CreateJobException;
+    JobInstance createJob(JobId jobId, JsonNode taskParameters) throws CreateJobException;
 
 }

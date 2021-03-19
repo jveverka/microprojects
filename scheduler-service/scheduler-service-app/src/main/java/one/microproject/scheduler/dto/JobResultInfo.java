@@ -11,6 +11,7 @@ public class JobResultInfo {
     private final Long startedTimeStamp;
     private final Long duration;
     private final JobStatus status;
+    private final ResultCode code;
     private final JsonNode result;
 
     @JsonCreator
@@ -19,12 +20,14 @@ public class JobResultInfo {
                          @JsonProperty("startedTimeStamp") Long startedTimeStamp,
                          @JsonProperty("duration") Long duration,
                          @JsonProperty("status") JobStatus status,
+                         @JsonProperty("code") ResultCode code,
                          @JsonProperty("result") JsonNode result) {
         this.id = id;
         this.taskType = taskType;
         this.startedTimeStamp = startedTimeStamp;
         this.duration = duration;
         this.status = status;
+        this.code = code;
         this.result = result;
     }
 
@@ -50,6 +53,10 @@ public class JobResultInfo {
 
     public JsonNode getResult() {
         return result;
+    }
+
+    public ResultCode getCode() {
+        return code;
     }
 
 }

@@ -8,6 +8,7 @@ import one.microproject.scheduler.dto.JobResultData;
 import one.microproject.scheduler.dto.JobResultInfo;
 import one.microproject.scheduler.dto.JobStatus;
 import one.microproject.scheduler.dto.JobWrapper;
+import one.microproject.scheduler.dto.ResultCode;
 import one.microproject.scheduler.dto.ScheduleJobRequest;
 import one.microproject.scheduler.dto.ScheduledJobInfo;
 import one.microproject.scheduler.dto.TaskInfo;
@@ -69,8 +70,9 @@ public class PeriodicSchedulerServiceImpl implements PeriodicSchedulerService, J
                 if (provider.isPresent()) {
                     LOG.info("  job init schedule {}", s.getTaskType());
                     //TODO: check the start date
-                    Runnable job = provider.get().createJob(id, jsonNode, this);
-                    ScheduledFuture<?> scheduledFuture = executorService.scheduleAtFixedRate(job, 1L, s.getInterval(), s.getTimeUnit());
+                    JobInstance jobInstance = provider.get().createJob(id, jsonNode);
+                    JobHandler handler = new JobHandler(id, jobInstance, this);
+                    ScheduledFuture<?> scheduledFuture = executorService.scheduleAtFixedRate(handler, 1L, s.getInterval(), s.getTimeUnit());
                     JobWrapper wrapper = new JobWrapper(scheduledFuture, id);
                     jobs.put(id, wrapper);
                 } else {
@@ -96,8 +98,9 @@ public class PeriodicSchedulerServiceImpl implements PeriodicSchedulerService, J
             if (provider.isPresent()) {
                 LOG.info("schedule {}", request.getTaskType());
                 //TODO: check the start date
-                Runnable job = provider.get().createJob(id, request.getTaskParameters(), this);
-                ScheduledFuture<?> scheduledFuture = executorService.scheduleAtFixedRate(job, 1L, request.getInterval(), request.getTimeUnit());
+                JobInstance jobInstance = provider.get().createJob(id, request.getTaskParameters());
+                JobHandler handler = new JobHandler(id, jobInstance, this);
+                ScheduledFuture<?> scheduledFuture = executorService.scheduleAtFixedRate(handler, 1L, request.getInterval(), request.getTimeUnit());
                 JobWrapper wrapper = new JobWrapper(scheduledFuture, id);
                 String parameters = mapper.writeValueAsString(request.getTaskParameters());
                 ScheduledJob scheduledJob = new ScheduledJob(id.getId(), request.getTaskType(),
@@ -133,11 +136,11 @@ public class PeriodicSchedulerServiceImpl implements PeriodicSchedulerService, J
 
     @Override
     @Transactional
-    public void setResult(JobId jobId, Long startedTimeStamp, Long duration, JsonNode result) {
+    public void setResult(JobId jobId, Long startedTimeStamp, Long duration, ResultCode code, JsonNode result) {
         LOG.info("setResult {}", jobId.getId());
         Mono<ScheduledJob> jobMono = scheduledJobRepository.findById(jobId.getId());
         jobMono.subscribe(s -> {
-            resultService.save(transformToJobResultInfo(s, startedTimeStamp, duration, JobStatus.RUNNING, result)).subscribe();
+            resultService.save(transformToJobResultInfo(s, startedTimeStamp, duration, JobStatus.RUNNING, code, result)).subscribe();
             s.setCounter(s.getCounter() + 1);
             LOG.info("updating counter {}/{}", jobId.getId(), s.getCounter());
             Mono<ScheduledJob> save = scheduledJobRepository.save(s);
@@ -179,8 +182,8 @@ public class PeriodicSchedulerServiceImpl implements PeriodicSchedulerService, J
     }
 
     private JobResultInfo transformToJobResultInfo(ScheduledJob scheduledJob, Long startedTimeStamp,
-                                                   Long duration, JobStatus status, JsonNode result) {
-        return new JobResultInfo(JobId.from(scheduledJob.getId()), scheduledJob.getTaskType(), startedTimeStamp, duration, status, result);
+                                                   Long duration, JobStatus status, ResultCode code, JsonNode result) {
+        return new JobResultInfo(JobId.from(scheduledJob.getId()), scheduledJob.getTaskType(), startedTimeStamp, duration, status, code, result);
     }
 
 }
