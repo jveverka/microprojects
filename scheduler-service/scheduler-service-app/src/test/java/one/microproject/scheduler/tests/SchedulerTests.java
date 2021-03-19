@@ -26,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @ContextConfiguration(initializers = SchedulerTests.Initializer.class)
-public class SchedulerTests {
+class SchedulerTests {
 
     private static final int DOCKER_EXPOSED_MONGO_PORT = 27017;
     private static final String MONGO_DOCKER_IMAGE = "mongo:4.2.12";
@@ -40,7 +40,7 @@ public class SchedulerTests {
 
     @Test
     @Order(0)
-    public void testGetTypes() {
+    void testGetTypes() {
         EntityExchangeResult<TaskInfo[]> taskInfosExchange = webClient.get().uri("/services/tasks/types")
                 .header("Authorization", "Bearer: " + accessToken)
                 .exchange()

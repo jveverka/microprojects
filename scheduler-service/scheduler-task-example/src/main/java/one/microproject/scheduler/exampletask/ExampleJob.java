@@ -23,25 +23,6 @@ public class ExampleJob implements JobInstance {
         LOG.info("creating ExampleJob {}", jobId.getId());
     }
 
-    /**
-    @Override
-    public void run() {
-        Long timeStamp = System.currentTimeMillis();
-        try {
-            LOG.info("Executing ExampleJob {}:{}", jobId.getId(), Thread.currentThread().getName());
-            Thread.sleep(jobParameters.getDelay());
-            ExampleJobResult result = new ExampleJobResult("OK");
-            Long duration = System.currentTimeMillis() - timeStamp;
-            jobResultCache.setResult(jobId, timeStamp, duration, mapper.valueToTree(result));
-            LOG.info("Done {}:{}", jobId.getId(), Thread.currentThread().getName());
-        } catch (InterruptedException e) {
-            LOG.error("Error: ", e);
-            ExampleJobResult result = new ExampleJobResult("ERROR: " + e.getMessage());
-            Long duration = System.currentTimeMillis() - timeStamp;
-            jobResultCache.setResult(jobId, timeStamp, duration, mapper.valueToTree(result));
-        }
-    }*/
-
     @Override
     public JsonNode getResult() throws JobException {
         try {
