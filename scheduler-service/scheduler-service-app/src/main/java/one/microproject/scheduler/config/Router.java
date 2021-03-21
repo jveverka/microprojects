@@ -47,16 +47,16 @@ public class Router {
                     Mono<JobId> mono = periodicSchedulerService.cancel(jobId);
                     return ServerResponse.ok().body(mono, JobId.class);
                 })
-                .andRoute(GET("/services/results").and(accept(APPLICATION_JSON)), request -> {
+                .andRoute(GET("/services/jobs/results").and(accept(APPLICATION_JSON)), request -> {
                     Flux<JobResultInfo> jobResultInfoFlux = resultService.getAll();
                     return ServerResponse.ok().body(jobResultInfoFlux, JobResultInfo.class);
                 })
-                .andRoute(GET("/services/results/{job-id}").and(accept(APPLICATION_JSON)), request -> {
+                .andRoute(GET("/services/jobs/results/{job-id}").and(accept(APPLICATION_JSON)), request -> {
                     JobId jobId = JobId.from(request.pathVariable(JOB_ID));
                     Mono<JobResultInfo> jobResultInfoMono = resultService.get(jobId);
                     return ServerResponse.ok().body(jobResultInfoMono, JobResultInfo.class);
                 })
-                .andRoute(DELETE("/services/results/{job-id}").and(accept(APPLICATION_JSON)), request -> {
+                .andRoute(DELETE("/services/jobs/results/{job-id}").and(accept(APPLICATION_JSON)), request -> {
                     JobId jobId = JobId.from(request.pathVariable(JOB_ID));
                     Mono<JobId> mono = resultService.delete(jobId);
                     return ServerResponse.ok().body(mono, JobId.class);
