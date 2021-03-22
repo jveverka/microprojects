@@ -5,6 +5,8 @@ This project is __WIP__ !
 ## Implemented features
 * Schedule periodic repetitive jobs.
 * Schedule one-time jobs.
+  
+## Planned features
 * Uses OAuth2 security model provided by [iam-service](https://github.com/jveverka/iam-service).
 
 ## Components
