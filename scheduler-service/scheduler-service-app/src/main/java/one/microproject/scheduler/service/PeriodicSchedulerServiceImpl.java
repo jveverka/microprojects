@@ -24,6 +24,7 @@ import reactor.core.publisher.Mono;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -70,7 +71,9 @@ public class PeriodicSchedulerServiceImpl implements PeriodicSchedulerService, J
                 if (provider.isPresent()) {
                     LOG.info("  job init schedule {}", s.getTaskType());
                     //TODO: check the start date
-                    JobInstance jobInstance = provider.get().createJob(id, jsonNode);
+                    JobProvider jobProvider = provider.get();
+                    Object taskParameters = mapper.readValue(mapper.treeAsTokens(jsonNode), jobProvider.getTaskParametersType());
+                    JobInstance jobInstance = jobProvider.createJob(id, taskParameters);
                     JobHandler handler = new JobHandler(id, jobInstance, this);
                     ScheduledFuture<?> scheduledFuture = executorService.scheduleAtFixedRate(handler, 1L, s.getInterval(), s.getTimeUnit());
                     JobWrapper wrapper = new JobWrapper(scheduledFuture, id);
@@ -78,7 +81,7 @@ public class PeriodicSchedulerServiceImpl implements PeriodicSchedulerService, J
                 } else {
                     LOG.info("  job init ERROR: no TaskType={} provided", s.getTaskType());
                 }
-            } catch (JsonProcessingException | CreateJobException e) {
+            } catch (IOException | CreateJobException e) {
                 LOG.warn("Failed to create Job {}", s.getId());
             }
         });
@@ -98,7 +101,9 @@ public class PeriodicSchedulerServiceImpl implements PeriodicSchedulerService, J
             if (provider.isPresent()) {
                 LOG.info("schedule {}", request.getTaskType());
                 //TODO: check the start date
-                JobInstance jobInstance = provider.get().createJob(id, request.getTaskParameters());
+                JobProvider jobProvider = provider.get();
+                Object taskParameters = mapper.readValue(mapper.treeAsTokens(request.getTaskParameters()), jobProvider.getTaskParametersType());
+                JobInstance jobInstance = jobProvider.createJob(id, taskParameters);
                 JobHandler handler = new JobHandler(id, jobInstance, this);
                 ScheduledFuture<?> scheduledFuture = executorService.scheduleAtFixedRate(handler, 1L, request.getInterval(), request.getTimeUnit());
                 JobWrapper wrapper = new JobWrapper(scheduledFuture, id);
@@ -110,7 +115,7 @@ public class PeriodicSchedulerServiceImpl implements PeriodicSchedulerService, J
                 Mono<ScheduledJob> saved = scheduledJobRepository.save(scheduledJob);
                 return saved.transform(mono -> mono.map( m -> JobId.from(m.getId())));
             }
-        } catch (JsonProcessingException | CreateJobException e) {
+        } catch (IOException | CreateJobException e) {
             LOG.warn("Failed to create Job {}", id.getId());
         }
         return Mono.empty();

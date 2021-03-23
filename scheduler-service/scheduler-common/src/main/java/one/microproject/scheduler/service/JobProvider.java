@@ -1,13 +1,14 @@
 package one.microproject.scheduler.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import one.microproject.scheduler.dto.JobId;
 import one.microproject.scheduler.dto.TaskInfo;
 
-public interface JobProvider {
+public interface JobProvider<T, R> {
 
     TaskInfo getTaskInfo();
 
-    JobInstance createJob(JobId jobId, JsonNode taskParameters) throws CreateJobException;
+    JobInstance<R> createJob(JobId jobId, T taskParameters) throws CreateJobException;
+
+    Class<T> getTaskParametersType();
 
 }
