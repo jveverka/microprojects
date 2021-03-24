@@ -22,7 +22,7 @@ public class ProviderFactoryServiceImpl implements ProviderFactoryService {
     }
 
     @Override
-    public Optional<JobProvider> get(String taskType) {
+    public Optional<JobProvider<?,?>> get(String taskType) {
         return Optional.ofNullable(providers.get(taskType));
     }
 
