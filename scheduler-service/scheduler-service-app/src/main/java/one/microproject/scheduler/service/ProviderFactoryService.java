@@ -9,6 +9,6 @@ public interface ProviderFactoryService {
 
     Flux<TaskInfo> getTaskInfo();
 
-    Optional<JobProvider> get(String taskType);
+    Optional<JobProvider<?,?>> get(String taskType);
 
 }

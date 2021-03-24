@@ -1,6 +1,5 @@
 package one.microproject.scheduler.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import one.microproject.scheduler.dto.JobId;
@@ -67,16 +66,11 @@ public class PeriodicSchedulerServiceImpl implements PeriodicSchedulerService, J
             try {
                 JobId id = JobId.from(s.getId());
                 JsonNode jsonNode = mapper.readTree(s.getTaskParameters());
-                Optional<JobProvider> provider = providerFactoryService.get(s.getTaskType());
+                Optional<JobProvider<?,?>> provider = providerFactoryService.get(s.getTaskType());
                 if (provider.isPresent()) {
                     LOG.info("  job init schedule {}", s.getTaskType());
                     //TODO: check the start date
-                    JobProvider jobProvider = provider.get();
-                    Object taskParameters = mapper.readValue(mapper.treeAsTokens(jsonNode), jobProvider.getTaskParametersType());
-                    JobInstance jobInstance = jobProvider.createJob(id, taskParameters);
-                    JobHandler handler = new JobHandler(id, jobInstance, this);
-                    ScheduledFuture<?> scheduledFuture = executorService.scheduleAtFixedRate(handler, 1L, s.getInterval(), s.getTimeUnit());
-                    JobWrapper wrapper = new JobWrapper(scheduledFuture, id);
+                    JobWrapper wrapper = createAndScheduleJob(id, provider.get(), s.getInterval(), s.getTimeUnit(), jsonNode);
                     jobs.put(id, wrapper);
                 } else {
                     LOG.info("  job init ERROR: no TaskType={} provided", s.getTaskType());
@@ -97,16 +91,11 @@ public class PeriodicSchedulerServiceImpl implements PeriodicSchedulerService, J
     public Mono<JobId> schedule(ScheduleJobRequest request) {
         JobId id = JobId.from(UUID.randomUUID().toString());
         try {
-            Optional<JobProvider> provider = providerFactoryService.get(request.getTaskType());
+            Optional<JobProvider<?,?>> provider = providerFactoryService.get(request.getTaskType());
             if (provider.isPresent()) {
                 LOG.info("schedule {}", request.getTaskType());
                 //TODO: check the start date
-                JobProvider jobProvider = provider.get();
-                Object taskParameters = mapper.readValue(mapper.treeAsTokens(request.getTaskParameters()), jobProvider.getTaskParametersType());
-                JobInstance jobInstance = jobProvider.createJob(id, taskParameters);
-                JobHandler handler = new JobHandler(id, jobInstance, this);
-                ScheduledFuture<?> scheduledFuture = executorService.scheduleAtFixedRate(handler, 1L, request.getInterval(), request.getTimeUnit());
-                JobWrapper wrapper = new JobWrapper(scheduledFuture, id);
+                JobWrapper wrapper = createAndScheduleJob(id, provider.get(), request.getInterval(), request.getTimeUnit(), request.getTaskParameters());
                 String parameters = mapper.writeValueAsString(request.getTaskParameters());
                 ScheduledJob scheduledJob = new ScheduledJob(id.getId(), request.getTaskType(),
                         request.getStartDate(), provider.get().getTaskInfo().getName(),
@@ -163,6 +152,14 @@ public class PeriodicSchedulerServiceImpl implements PeriodicSchedulerService, J
         while(!executorService.awaitTermination(10, TimeUnit.SECONDS)) {
             LOG.info("waiting for executor ...");
         }
+    }
+
+    private JobWrapper createAndScheduleJob(JobId id, JobProvider jobProvider, Long interval, TimeUnit timeUnit, JsonNode jsonNode) throws CreateJobException, IOException {
+        Object taskParameters = mapper.readValue(mapper.treeAsTokens(jsonNode), jobProvider.getTaskParametersType());
+        JobInstance jobInstance = jobProvider.createJob(id, taskParameters);
+        JobHandler handler = new JobHandler(id, jobInstance, this);
+        ScheduledFuture<?> scheduledFuture = executorService.scheduleAtFixedRate(handler, 1L, interval, timeUnit);
+        return new JobWrapper(scheduledFuture, id);
     }
 
     private Mono<ScheduledJobInfo> transformScheduledJob(ScheduledJob scheduledJob) {
