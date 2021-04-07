@@ -1,5 +1,5 @@
 plugins {
-    id 'org.springframework.boot' version '2.4.3'
+    id 'org.springframework.boot' version '2.4.4'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'java'
 }
@@ -18,9 +18,9 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.bouncycastle:bcpg-jdk15on:1.68'
     implementation 'org.bouncycastle:bcpkix-jdk15on:1.68'
-    implementation 'one.microproject.iamservice:iam-model:2.5.2-RELEASE'
-    implementation 'one.microproject.iamservice:iam-client:2.5.2-RELEASE'
-    implementation 'one.microproject.iamservice:iam-core:2.5.2-RELEASE'
+    implementation 'one.microproject.iamservice:iam-model:2.5.3-RELEASE'
+    implementation 'one.microproject.iamservice:iam-client:2.5.3-RELEASE'
+    implementation 'one.microproject.iamservice:iam-core:2.5.3-RELEASE'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'io.projectreactor:reactor-test'
