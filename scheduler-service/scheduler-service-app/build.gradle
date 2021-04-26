@@ -1,5 +1,5 @@
 plugins {
-    id 'org.springframework.boot' version '2.4.4'
+    id 'org.springframework.boot' version '2.4.5'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'java'
 }
@@ -18,16 +18,16 @@ dependencies {
     //implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.bouncycastle:bcpg-jdk15on:1.68'
     implementation 'org.bouncycastle:bcpkix-jdk15on:1.68'
-    implementation 'one.microproject.iamservice:iam-model:2.5.3-RELEASE'
-    implementation 'one.microproject.iamservice:iam-client:2.5.3-RELEASE'
-    implementation 'one.microproject.iamservice:iam-core:2.5.3-RELEASE'
+    implementation 'one.microproject.iamservice:iam-model:2.5.4-RELEASE'
+    implementation 'one.microproject.iamservice:iam-client:2.5.4-RELEASE'
+    implementation 'one.microproject.iamservice:iam-core:2.5.4-RELEASE'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'io.projectreactor:reactor-test'
     testImplementation 'org.springframework.security:spring-security-test'
     testImplementation 'org.testcontainers:junit-jupiter:1.15.2'
     testImplementation 'org.testcontainers:mongodb:1.15.2'
-    testImplementation 'one.microproject.iamservice:iam-service-client:2.5.2-RELEASE'
+    testImplementation 'one.microproject.iamservice:iam-service-client:2.5.4-RELEASE'
     testImplementation 'com.squareup.okhttp3:okhttp:4.9.1'
 
 }
