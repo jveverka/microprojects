@@ -73,7 +73,7 @@ public class AppEventLoggerTests {
 
     private static final int DOCKER_EXPOSED_MONGO_PORT = 27017;
     private static final int IAM_SERVICE_EXPOSED_PORT = 8080;
-    private static final String MONGO_DOCKER_IMAGE = "mongo:4.2.12";
+    private static final String MONGO_DOCKER_IMAGE = "mongo:4.4.4";
     private static final String IAM_SERVICE_DOCKER_IMAGE = "jurajveverka/iam-service:2.5.4-RELEASE-amd64";
     private static MongoDBContainer mongoDBContainer;
     private static String iamServiceBaseURL;
