@@ -1,0 +1,27 @@
+server:
+  port: 8090
+spring:
+  data:
+    mongodb:
+      host: mongodb
+      port: 27017
+      database: loggerdb
+      user: loggeruser
+      password: secret
+
+app:
+  iam-client:
+    organization-id: backend-services
+    project-id: event-logger
+    base-url: http://iamservice:8080
+    polling-interval: 30
+    time-unit: SECONDS
+
+logging:
+  level:
+    root: INFO
+    one:
+      microproject:
+        iamservice:
+          client:
+            impl: INFO

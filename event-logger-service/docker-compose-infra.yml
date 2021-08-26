@@ -1,19 +1,10 @@
 version: '3.7'
 
 services:
-
   iamservice:
     image: jurajveverka/iam-service:2.5.9-RELEASE
     ports:
       - 8080:8080
-
-  eventlogger:
-    image: jurajveverka/event-logger:1.0.0-SNAPSHOT
-    ports:
-      - 8090:8090
-    environment:
-      APP_CONFIG_PATH: /opt/data/application-cloud.yml
-
   mongodb:
     image: mongo:4.2.12
     ports:
