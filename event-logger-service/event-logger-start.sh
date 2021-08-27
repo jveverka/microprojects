@@ -1,13 +1,14 @@
-#!/bin/sh
+#!/bin/bash
 
 echo "starting event-logger ..."
 echo "APP_CONFIG_PATH=${APP_CONFIG_PATH}"
 
-echo "Waiting for mongodb to launch on 27017..."
-while ! nc -z mongodb 27017; do
+echo "Waiting for MongoDB to launch on ${EL_MONGO_HOST}:${EL_MONGO_PORT} ..."
+while ! nc -z ${EL_MONGO_HOST} ${EL_MONGO_PORT}; do
   sleep 0.5 # wait for 0.5s before check again
   echo -n "."
 done
+echo ""
 echo "MongoDB launched !"
 
 if [ "${APP_CONFIG_PATH}" = "false" ]; then

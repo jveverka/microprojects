@@ -3,17 +3,17 @@ server:
 spring:
   data:
     mongodb:
-      host: mongodb
-      port: 27017
-      database: loggerdb
-      user: loggeruser
-      password: secret
+      host: ${EL_MONGO_HOST}
+      port: ${EL_MONGO_PORT}
+      database: ${EL_MONGO_DB}
+      user: ${EL_MONGO_USER}
+      password: ${EL_MONGO_PASSWD}
 
 app:
   iam-client:
     organization-id: backend-services
     project-id: event-logger
-    base-url: http://iamservice:8080
+    base-url: ${EL_IAM_BASE_URL}
     polling-interval: 30
     time-unit: SECONDS
 
@@ -24,4 +24,4 @@ logging:
       microproject:
         iamservice:
           client:
-            impl: INFO
+            impl: ${EL_LOGLEVEL:INFO}
