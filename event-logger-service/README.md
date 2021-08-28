@@ -44,7 +44,7 @@ docker-compose down -v --rmi all --remove-orphans
 ```
 
 ### Setup iam-service (create project users)
-1. Run project setup script ``tools/project-setup-create.sh``
+1. Run project setup script ``./tools/project-setup-create.sh``
 2. Get project user access token.
    ```
    USER_ACCESS_TOKEN=`curl -s --request POST 'http://localhost:8080/auth/services/oauth2/backend-services/microprojects/token?grant_type=password&username=juraj&password=secret&scope=&client_id=mp-client&client_secret=mp-client-secret' \

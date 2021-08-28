@@ -1,7 +1,5 @@
 server:
   port: 8090
-  servlet:
-    context-path: ${EL_CONTEXT_PATH}
 spring:
   data:
     mongodb:
@@ -12,9 +10,10 @@ spring:
       password: ${EL_MONGO_PASSWD}
 
 app:
+  context-path: ${EL_CONTEXT_PATH}
   iam-client:
-    organization-id: backend-services
-    project-id: event-logger
+    organization-id: ${EL_ORGANIZATION_ID}
+    project-id: ${EL_PROJECT_ID}
     base-url: ${EL_IAM_BASE_URL}
     polling-interval: 30
     time-unit: SECONDS

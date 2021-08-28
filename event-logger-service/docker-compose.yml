@@ -44,6 +44,8 @@ services:
       EL_MONGO_USER: "admin"
       EL_MONGO_PASSWD: "secret"
       EL_IAM_BASE_URL: "http://iamservice:8080/auth"
+      EL_ORGANIZATION_ID: "backend-services"
+      EL_PROJECT_ID: "microprojects"
       EL_LOGLEVEL: "INFO"
     depends_on:
       - "redis"

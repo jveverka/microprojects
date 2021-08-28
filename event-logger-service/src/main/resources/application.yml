@@ -11,6 +11,7 @@ spring:
       #uri: mongo://localhost:27017/test
 
 app:
+  context-path: /
   iam-client:
     organization-id: backend-services
     project-id: event-logger
