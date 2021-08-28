@@ -3,7 +3,7 @@
 echo "1. Get GLOBAL_ADMIN_ACCESS_TOKEN"
 GLOBAL_ADMIN_ACCESS_TOKEN=$(curl -s --request POST "http://localhost:8080/auth/services/oauth2/iam-admins/iam-admins/token?grant_type=password&username=admin&password=secret&scope=&client_id=admin-client&client_secret=secret" \
 --header "Content-Type: application/x-www-form-urlencoded" | jq -r ".access_token")
-echo "  $?"
+echo "  RESULT=$?"
 echo "  ${GLOBAL_ADMIN_ACCESS_TOKEN}"
 
 echo "2. Create project and organization"
@@ -26,12 +26,12 @@ curl --location --request POST 'http://localhost:8080/auth/services/admin/organi
        "properties": {}
      }
   }'
-echo "  $?"
+echo "  RESULT=$?"
 
 echo "3. Get Project admin access token."
 PROJECT_ADMIN_ACCESS_TOKEN=$(curl -s --request POST 'http://localhost:8080/auth/services/oauth2/backend-services/microprojects/token?grant_type=password&username=mp-admin&password=mp-secret&scope=&client_id=mp-client&client_secret=mp-client-secret' \
 --header 'Content-Type: application/x-www-form-urlencoded' | jq -r ".access_token")
-echo "  $?"
+echo "  RESULT=$?"
 
 echo "4. Create project user"
 curl --location --request POST "http://localhost:8080/auth/services/management/backend-services/microprojects/users" \
@@ -48,7 +48,7 @@ curl --location --request POST "http://localhost:8080/auth/services/management/b
           "properties": {}
       }
   }'
-echo "  $?"
+echo "  RESULT=$?"
 
 echo "5. Create project role - full access"
 curl --location --request POST 'http://localhost:8080/auth/services/management/backend-services/microprojects/roles' \
@@ -70,14 +70,15 @@ curl --location --request POST 'http://localhost:8080/auth/services/management/b
         }
     ]
   }'
+echo "  RESULT=$?"
 
 echo "6. Assign project role to user"
 curl --location --request PUT 'http://localhost:8080/auth/services/management/backend-services/microprojects/users/juraj/roles/event-logger-full-role' \
 --header 'Authorization: Bearer '"$PROJECT_ADMIN_ACCESS_TOKEN"''
-echo "  $?"
+echo "  RESULT=$?"
 
 echo "7. Get user's access token"
 USER_ACCESS_TOKEN=`curl -s --request POST 'http://localhost:8080/auth/services/oauth2/backend-services/microprojects/token?grant_type=password&username=juraj&password=secret&scope=&client_id=mp-client&client_secret=mp-client-secret' \
 --header 'Content-Type: application/x-www-form-urlencoded' | jq -r ".access_token"`
-echo "  $?"
+echo "  RESULT=$?"
 echo "USER_ACCESS_TOKEN=${USER_ACCESS_TOKEN}"
