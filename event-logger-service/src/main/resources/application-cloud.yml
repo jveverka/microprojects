@@ -1,5 +1,7 @@
 server:
   port: 8090
+  servlet:
+    context-path: ${EL_CONTEXT_PATH}
 spring:
   data:
     mongodb:

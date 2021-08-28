@@ -22,10 +22,10 @@ This project is __WIP__ !
 ### Build, Test & Run 
 ```
 gradle clean build test
-java -jar build/libs/event-logger-service-0.0.1-SNAPSHOT.jar 
+java -jar build/libs/event-logger-service-1.0.0-SNAPSHOT.jar 
 ```
 
-### Run infrastructure in docker
+### Run infrastructure in docker-compose
 ```
 docker-compose -f docker-compose-infra.yml up -d
 docker-compose -f docker-compose-infra.yml down -v --rmi all --remove-orphans
@@ -35,15 +35,19 @@ docker-compose -f docker-compose-infra.yml down -v --rmi all --remove-orphans
 ```
 docker build -t jurajveverka/event-logger:1.0.0-SNAPSHOT --file Dockerfile .
 docker push jurajveverka/event-logger:1.0.0-SNAPSHOT
+```
 
-docker run --name event-logger:1.0.0-SNAPSHOT \
-      --restart unless-stopped \
-      -e APP_CONFIG_PATH=/opt/data/application-cloud.yml \
-      -e XMX=128m \
-      -v 'pwd':/opt/data \
-      --network host \
-      -d -p 8090:8090 jurajveverka/event-logger:1.0.0-SNAPSHOT
-
+### Run stack in docker-compose
+```
 docker-compose up -d
 docker-compose down -v --rmi all --remove-orphans
 ```
+
+### Setup iam-service (create project users)
+1. Run project setup script ``tools/project-setup-create.sh``
+2. Get project user access token.
+   ```
+   USER_ACCESS_TOKEN=`curl -s --request POST 'http://localhost:8080/auth/services/oauth2/backend-services/microprojects/token?grant_type=password&username=juraj&password=secret&scope=&client_id=mp-client&client_secret=mp-client-secret' \
+   --header 'Content-Type: application/x-www-form-urlencoded' | jq -r ".access_token"`
+   echo "USER_ACCESS_TOKEN=${USER_ACCESS_TOKEN}"
+   ``` 

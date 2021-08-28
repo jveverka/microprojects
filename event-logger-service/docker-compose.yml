@@ -37,12 +37,13 @@ services:
       - 8090:8090
     environment:
       APP_CONFIG_PATH: "/opt/data/application-cloud.yml"
+      EL_CONTEXT_PATH: "/eventlogger"
       EL_MONGO_HOST: "mongodb-data"
       EL_MONGO_PORT: 27017
       EL_MONGO_DB: "admin"
       EL_MONGO_USER: "admin"
       EL_MONGO_PASSWD: "secret"
-      EL_IAM_BASE_URL: "http://iamservice:8080"
+      EL_IAM_BASE_URL: "http://iamservice:8080/auth"
       EL_LOGLEVEL: "INFO"
     depends_on:
       - "redis"
