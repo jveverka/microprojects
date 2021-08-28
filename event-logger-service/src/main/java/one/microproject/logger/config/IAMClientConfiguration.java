@@ -37,7 +37,7 @@ public class IAMClientConfiguration {
         LOG.info("## baseUrl={}", baseUrl);
         LOG.info("## pollingInterval={}", pollingInterval);
         LOG.info("## timeUnit={}", timeUnit);
-        LOG.info("#CONFIG: initializing Bouncy Castle Provider (BCP) ...");
+        LOG.info("## CONFIG: initializing Bouncy Castle Provider (BCP) ...");
         Security.addProvider(new BouncyCastleProvider());
     }
 

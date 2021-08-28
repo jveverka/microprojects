@@ -18,6 +18,22 @@ app:
     polling-interval: 30
     time-unit: SECONDS
 
+management:
+  endpoint:
+    prometheus:
+      enabled: true
+    metrics:
+      enabled: true
+  endpoints:
+    web:
+      base-path: ${EL_CONTEXT_PATH}/actuator
+      exposure:
+        include: "*"
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+
 logging:
   level:
     root: INFO

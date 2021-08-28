@@ -4,6 +4,7 @@ import one.microproject.iamservice.client.IAMClient;
 import one.microproject.iamservice.client.JWTUtils;
 import one.microproject.iamservice.core.dto.StandardTokenClaims;
 import one.microproject.iamservice.core.model.JWToken;
+import one.microproject.logger.config.ContextConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,17 +23,25 @@ import java.util.Optional;
 public class SecurityFilter implements WebFilter {
 
     private static final Logger LOG = LoggerFactory.getLogger(SecurityFilter.class);
+    private static final String ACTUATOR_PREFIX = "/actuator";
 
     private final IAMClient iamClient;
+    private final ContextConfig config;
 
     @Autowired
-    public SecurityFilter(IAMClient iamClient) {
+    public SecurityFilter(IAMClient iamClient, ContextConfig config) {
         this.iamClient = iamClient;
+        this.config = config;
     }
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
         List<String> authorizationHeaders = exchange.getRequest().getHeaders().get("Authorization");
+        String path = exchange.getRequest().getPath().toString();
+        if (path.startsWith(config.getPath(ACTUATOR_PREFIX))) {
+            LOG.info("filter: AUTHORIZATION Skipped: {}", path);
+            return chain.filter(exchange);
+        }
         if (authorizationHeaders != null) {
             Optional<String> authorization = authorizationHeaders.stream().findFirst();
             if (authorization.isPresent()) {
@@ -45,9 +54,9 @@ public class SecurityFilter implements WebFilter {
                 }
             }
         }
-        LOG.info("filter: UNAUTHORIZED");
+        LOG.info("filter: UNAUTHORIZED {}", path);
         exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
-        return chain.filter(exchange);
+        return Mono.empty();
     }
 
 }

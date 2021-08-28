@@ -21,12 +21,12 @@ services:
       IAM_MONGO_PERSISTENCE_PORT: 27017
       IAM_MONGO_PERSISTENCE_DATABASE: "admin"
       IAM_MONGO_PERSISTENCE_USERNAME: "admin"
+      IAM_MONGO_PERSISTENCE_PASSWORD: "secret"
       IAM_ROOT_LOGLEVEL: "INFO"
       IAM_LOGLEVEL: "INFO"
       IAM_ADMIN_PASSWORD: "secret"
       IAM_ADMIN_CLIENT_SECRET: "secret"
       IAM_ADMIN_EMAIL: "admin@iam-service.com"
-      IAM_MONGO_PERSISTENCE_PASSWORD: "secret"
     depends_on:
       - "redis"
       - "mongodb-iam"
