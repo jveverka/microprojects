@@ -43,6 +43,15 @@ docker-compose up -d
 docker-compose down -v --rmi all --remove-orphans
 ```
 
+### Run stack in Docker Swarm
+Start stack on swarm cluster master node:
+```
+curl https://raw.githubusercontent.com/jveverka/microproject/master/event-logger-service/docker-compose.yml -o event-logger-stack.yml
+curl https://raw.githubusercontent.com/jveverka/microproject/master/event-logger-service/tools/project-setup-create.sh
+docker stack deploy -c event-logger-stack.yml event-logger-stack
+./project-setup-create.sh
+```
+
 ### Setup iam-service (create project users)
 1. Run project setup script ``./tools/project-setup-create.sh``
 2. Get project user access token.
@@ -51,3 +60,4 @@ docker-compose down -v --rmi all --remove-orphans
    --header 'Content-Type: application/x-www-form-urlencoded' | jq -r ".access_token"`
    echo "USER_ACCESS_TOKEN=${USER_ACCESS_TOKEN}"
    ``` 
+
