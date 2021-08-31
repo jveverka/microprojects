@@ -9,13 +9,19 @@ Collection of various micro-projects.
 * [iam-service OAuth2 server](https://github.com/jveverka/iam-service)
 * [event-logger-service](event-logger-service)
 * [scheduler-engine](scheduler-service)
-* file-server
+* file-server - TBD
 
-### Infrastructure
-* [Mongo setup](docs/mongo-setup.md)
-* [Local Docker Registry](docs/local-docker-registry-setup.md)
+### Local Infrastructure
+* [Mongo setup](docs/local-infrastructure/mongo-setup.md)
+* [Local Docker Registry](docs/local-infrastructure/local-docker-registry-setup.md)
+
+### Application Clusters
+Example flow of microservice application development and deployments for managed kubernetes clusters.
+* [Application development flow](docs/app-development)
+* [Docker Swarm deployment](docs/cluster-docker-swarm)
+* [Kubernetes deployment](docs/cluster-kubernetes)
 
 ### Build and Test
 ```
-gradle clean build test publishToMavenLocal
+gradle clean build test
 ```
