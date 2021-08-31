@@ -1,2 +1,0 @@
-
-## Docker Swarm deployment

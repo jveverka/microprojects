@@ -1,3 +1,5 @@
+# event-logger infrastructure only stack
+
 version: '3.7'
 
 services:

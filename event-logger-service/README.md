@@ -27,8 +27,8 @@ java -jar build/libs/event-logger-service-1.0.0-SNAPSHOT.jar
 
 ### Run infrastructure in docker-compose
 ```
-docker-compose -f docker-compose-infra.yml up -d
-docker-compose -f docker-compose-infra.yml down -v --rmi all --remove-orphans
+docker-compose -f el-docker-compose-infra.yml up -d
+docker-compose -f el-docker-compose-infra.yml down -v --rmi all --remove-orphans
 ```
 
 ### Create docker image
@@ -39,21 +39,21 @@ docker push jurajveverka/event-logger:1.0.0-SNAPSHOT
 
 ### Run stack in docker-compose
 ```
-docker-compose up -d
-docker-compose down -v --rmi all --remove-orphans
+docker-compose -f el-docker-compose.yml up -d
+docker-compose -f el-docker-compose.yml down -v --rmi all --remove-orphans
 ```
 
 ### Run stack in Docker Swarm
 Start stack on swarm cluster master node:
 ```
-curl https://raw.githubusercontent.com/jveverka/microproject/master/event-logger-service/docker-compose.yml -o event-logger-stack.yml
-curl https://raw.githubusercontent.com/jveverka/microproject/master/event-logger-service/tools/project-setup-create.sh
-docker stack deploy -c event-logger-stack.yml event-logger-stack
-./project-setup-create.sh
+curl https://raw.githubusercontent.com/jveverka/microproject/master/event-logger-service/docker-compose.yml -o el-docker-compose.yml
+curl https://raw.githubusercontent.com/jveverka/microproject/master/event-logger-service/tools/project-setup-create.sh -o el-project-setup-create.sh
+docker stack deploy -c el-docker-compose.yml event-logger
+./el-project-setup-create.sh
 ```
 
 ### Setup iam-service (create project users)
-1. Run project setup script ``./tools/project-setup-create.sh``
+1. Run project setup script ``./tools/el-project-setup-create.sh``
 2. Get project user access token.
    ```
    USER_ACCESS_TOKEN=`curl -s --request POST 'http://localhost:8080/auth/services/oauth2/backend-services/microprojects/token?grant_type=password&username=juraj&password=secret&scope=&client_id=mp-client&client_secret=mp-client-secret' \
