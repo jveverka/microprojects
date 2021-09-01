@@ -60,4 +60,3 @@ docker stack deploy -c el-docker-compose.yml event-logger
    --header 'Content-Type: application/x-www-form-urlencoded' | jq -r ".access_token"`
    echo "USER_ACCESS_TOKEN=${USER_ACCESS_TOKEN}"
    ``` 
-

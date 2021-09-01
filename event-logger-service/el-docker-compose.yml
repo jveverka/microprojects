@@ -49,6 +49,8 @@ services:
       EL_ORGANIZATION_ID: "backend-services"
       EL_PROJECT_ID: "microprojects"
       EL_LOGLEVEL: "INFO"
+      #if ES_HOSTS variable is defined, metricbeat is started sending metrics to ElasticSearch
+      #ES_HOSTS: "http://192.168.122.38:9200"
     depends_on:
       - "redis"
       - "mongodb-iam"

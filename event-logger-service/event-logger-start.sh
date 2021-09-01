@@ -11,6 +11,13 @@ done
 echo ""
 echo "MongoDB launched !"
 
+if [ -z ${ES_HOSTS+x} ]; then
+  echo "ElasticSearch ES_HOSTS is not set, metricbeat start is skipped !"
+else
+  echo "ES_HOSTS='$ES_HOSTS', starting metricbeat !"
+  metricbeat 2>&1 &
+fi
+
 if [ "${APP_CONFIG_PATH}" = "false" ]; then
   echo "using default configuration"
   echo "SERVER_PORT=${SERVER_PORT}"
