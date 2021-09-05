@@ -33,6 +33,7 @@ to start ElasticSearch - Kibana stack.
     "log-driver": "json-file", "log-opts": { "max-size": "10m", "max-file": "3" }
 
 ## Metrics Collection
+* Metric collection agent is packaged into each microservice docker image. 
 
 ### References
 * [Metricbeat OS  Data into ES](https://www.baeldung.com/ops/os-data-into-elastic-stack)
