@@ -4,7 +4,6 @@ apply plugin: 'maven-publish'
 
 group = 'one.microproject.scheduler'
 version = '1.0.1-SNAPSHOT'
-sourceCompatibility = '11'
 
 repositories {
     mavenCentral()

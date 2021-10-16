@@ -1,0 +1,6 @@
+server:
+  port: 8085
+
+app:
+  elastic-host: localhost
+  elastic-port: 9200
