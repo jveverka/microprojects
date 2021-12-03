@@ -49,11 +49,13 @@ public class RestClientConfig extends AbstractElasticsearchConfiguration {
         return RestClients.create(clientConfiguration).rest();
     }
 
+    /**
     @Bean
     @Override
     public ElasticsearchCustomConversions elasticsearchCustomConversions() {
         return new ElasticsearchCustomConversions(
                 Arrays.asList(new EventDocumentReadingConverter(), new EventDocumentWritingConverter()));
     }
+    */
 
 }

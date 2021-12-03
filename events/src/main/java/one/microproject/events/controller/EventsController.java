@@ -21,7 +21,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/events")
+@RequestMapping("/api/v1/events")
 public class EventsController {
 
     private ElasticsearchOperations elasticsearchOperations;
@@ -34,7 +34,8 @@ public class EventsController {
     public IdDTO save(@RequestBody EventDTO eventDTO) {
         String id = UUID.randomUUID().toString();
         Date date = new Date();
-        EventDocument eventDocument = new EventDocument(id, date, "user-001", eventDTO);
+        EventDocument eventDocument = new EventDocument(id, date, "user-001",
+                eventDTO.streamId(), eventDTO.activityType(), eventDTO.quantity(), eventDTO.duration(), eventDTO.unit(), eventDTO.labels());
         IndexQuery indexQuery = new IndexQueryBuilder()
                 .withId(id)
                 .withObject(eventDocument)

@@ -1,7 +1,7 @@
 server:
   port: ${PORT}
   servlet:
-    context-path: /events
+    context-path: ${CONTEXT_PATH}
 
 app:
   elastic-host: ${ELASTIC_HOST}

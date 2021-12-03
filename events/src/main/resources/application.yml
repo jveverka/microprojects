@@ -6,5 +6,5 @@ server:
 app:
   elastic-host: localhost
   elastic-port: 9200
-  elastic-user: user
-  elastic-pass: pass
+  elastic-user: elastic
+  elastic-pass: supersecret
