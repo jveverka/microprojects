@@ -1,6 +1,10 @@
 server:
   port: 8085
+  servlet:
+    context-path: /events
 
 app:
   elastic-host: localhost
   elastic-port: 9200
+  elastic-user: user
+  elastic-pass: pass

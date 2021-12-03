@@ -16,15 +16,19 @@ public class EventDocument {
     @Field(type= FieldType.Date)
     private Date date;
 
+    @Field(type= FieldType.Keyword)
+    private String userId;
+
     @Field(type= FieldType.Object)
     private Object body;
 
     public EventDocument() {
     }
 
-    public EventDocument(String id, Date date, Object body) {
+    public EventDocument(String id, Date date, String userId, Object body) {
         this.id = id;
         this.date = date;
+        this.userId = userId;
         this.body = body;
     }
 
@@ -50,6 +54,14 @@ public class EventDocument {
 
     public void setBody(Object body) {
         this.body = body;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
 }

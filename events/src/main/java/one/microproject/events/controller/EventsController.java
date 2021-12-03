@@ -34,7 +34,7 @@ public class EventsController {
     public IdDTO save(@RequestBody EventDTO eventDTO) {
         String id = UUID.randomUUID().toString();
         Date date = new Date();
-        EventDocument eventDocument = new EventDocument(id, date, eventDTO);
+        EventDocument eventDocument = new EventDocument(id, date, "user-001", eventDTO);
         IndexQuery indexQuery = new IndexQueryBuilder()
                 .withId(id)
                 .withObject(eventDocument)

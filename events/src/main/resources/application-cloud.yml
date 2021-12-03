@@ -1,0 +1,10 @@
+server:
+  port: ${PORT}
+  servlet:
+    context-path: /events
+
+app:
+  elastic-host: ${ELASTIC_HOST}
+  elastic-port: ${ELASTIC_PORT}
+  elastic-user: ${ELASTIC_USER}
+  elastic-pass: ${ELASTIC_PASS}
