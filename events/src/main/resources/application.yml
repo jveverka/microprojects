@@ -4,6 +4,7 @@ server:
     context-path: /events
 
 app:
+  elastic-index: events
   elastic-host: localhost
   elastic-port: 9200
   elastic-user: elastic

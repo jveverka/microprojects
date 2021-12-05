@@ -1,5 +1,6 @@
 package one.microproject.events.config;
 
+import one.microproject.events.dto.ElasticConfig;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +20,9 @@ public class RestClientConfig extends AbstractElasticsearchConfiguration {
 
     private static final Logger LOG = LoggerFactory.getLogger(RestClientConfig.class);
 
+    @Value("${app.elastic-index}")
+    private String elasticIndex;
+
     @Value("${app.elastic-host}")
     private String elasticHost;
 
@@ -33,6 +37,7 @@ public class RestClientConfig extends AbstractElasticsearchConfiguration {
 
     @PostConstruct
     public void init() {
+        LOG.info("#ElasticIndex: {}", elasticIndex);
         LOG.info("#ElasticHost: {}", elasticHost);
         LOG.info("#ElasticPort: {}", elasticPort);
         LOG.info("#ElasticUser: {}", elasticUser);
@@ -46,6 +51,11 @@ public class RestClientConfig extends AbstractElasticsearchConfiguration {
                 .withBasicAuth(elasticUser, elasticPass)
                 .build();
         return RestClients.create(clientConfiguration).rest();
+    }
+
+    @Bean
+    public ElasticConfig getElasticConfig() {
+        return new ElasticConfig(elasticIndex);
     }
 
 }
