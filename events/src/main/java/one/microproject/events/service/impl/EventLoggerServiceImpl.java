@@ -45,7 +45,7 @@ public class EventLoggerServiceImpl implements EventLoggerService {
     @Override
     public List<EventDocument> getAll() {
         SearchHits<EventDocument> events = elasticsearchOperations
-                .search(Query.findAll(), EventDocument.class);
+                .search(Query.findAll(), EventDocument.class, IndexCoordinates.of("events"));
         return events.get().map(s->s.getContent()).collect(Collectors.toList());
     }
 
