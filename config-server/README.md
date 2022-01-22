@@ -2,6 +2,11 @@
 Microservice serving springboot and other configurations in k8s, 
 docker swarm and other cloud deployments. This project is based on [Spring Cloud Config](https://cloud.spring.io/spring-cloud-config/reference/html/).
 
+### Security
+This instance of config-server uses base http authorization.
+* username: ``user``
+* password: ``${CS_PASSWORD}``
+ 
 ## Run with docker
 ```
 docker run -d --name config-service \
@@ -15,16 +20,22 @@ docker run -d --name config-service \
 ```
 
 ### Volume Mappings
-
 | * Volume Path        | CS_GIT_URL                 |
 |----------------------|----------------------------|
 | "/opt/config-server" | "file://opt/config-server" |
 
 ### File Mappings
-| Repository Path         | URL                                                                     |
+| Repository Path         | Config URL                                                              |
 |-------------------------|-------------------------------------------------------------------------|
 | nginx-config/nginx.conf | http://<server>:<port>/application/default/main/nginx-config/nginx.conf |
 
-## Build
+### Curl example
+```
+curl --request GET \
+  --user user:supersecret \
+  --url http://<server>:<port>/<config-url>
+```
+
+### Build
 * Local build: ``gradle clean build test``
 * [Dockerize Config-Server](docs/cs-dockerize.md).
