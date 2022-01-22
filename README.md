@@ -1,5 +1,5 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Java11](https://img.shields.io/badge/java-11-blue)](https://img.shields.io/badge/java-11-blue)
+[![Java11](https://img.shields.io/badge/java-17-blue)](https://img.shields.io/badge/java-17-blue)
 [![Gradle](https://img.shields.io/badge/gradle-v7-blue)](https://img.shields.io/badge/gradle-v7-blue)
 ![Build and Test](https://github.com/jveverka/microproject/workflows/Build%20and%20Test/badge.svg)
 
