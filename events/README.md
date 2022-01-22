@@ -25,6 +25,7 @@ docker manifest push jurajveverka/events-service:${VERSION}
 docker run -d --name events-service \
   --restart unless-stopped \
   -e PORT=8085 \
+  -e ELASTIC_INDEX=events \
   -e ELASTIC_HOST=localhost \
   -e ELASTIC_PORT=9200 \
   -e ELASTIC_USER=elastic \
