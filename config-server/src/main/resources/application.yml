@@ -1,0 +1,18 @@
+server:
+  port: 8080
+
+spring:
+  config:
+    name: config-server
+  cloud:
+    config:
+      server:
+        git:
+          uri: ${CS_GIT_URI}
+          default-label: ${CS_DEFAULT_LABEL}
+          force-pull: true
+
+logging:
+  level:
+    root: INFO
+    org.springframework.cloud: 'DEBUG'
