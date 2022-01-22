@@ -10,7 +10,8 @@ docker run -d --name config-service \
   -e PORT=8080 \
   -e CS_DEFAULT_LABEL=main \
   -e CS_GIT_URL=file://opt/config-server \
-  -p 8085:8085 jurajveverka/config-service:1.0.0
+  -e CS_PASSWORD=supersecret \
+  -p 8085:8085 jurajveverka/config-service:1.0.1
 ```
 
 ### Volume Mappings
@@ -25,5 +26,5 @@ docker run -d --name config-service \
 | nginx-config/nginx.conf | http://<server>:<port>/application/default/main/nginx-config/nginx.conf |
 
 ## Build
-* Local build: ``gradle clean build``
+* Local build: ``gradle clean build test``
 * [Dockerize Config-Server](docs/cs-dockerize.md).

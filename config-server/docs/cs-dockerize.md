@@ -1,8 +1,8 @@
 # How to dockerize Config-Server
 
 ```
-export VERSION=1.0.0
-gradle clean build
+export VERSION=1.0.1
+gradle clean build test
 
 # on x86 AMD64 device:
 docker build -t jurajveverka/config-server:${VERSION}-amd64 --build-arg ARCH=amd64 --file Dockerfile .

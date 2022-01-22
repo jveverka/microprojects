@@ -11,6 +11,9 @@ spring:
           uri: ${CS_GIT_URI}
           default-label: ${CS_DEFAULT_LABEL}
           force-pull: true
+  security:
+    user:
+      password: ${CS_PASSWORD}
 
 logging:
   level:
