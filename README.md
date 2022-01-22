@@ -9,7 +9,7 @@ Collection of various micro-projects.
 * [iam-service OAuth2 server](https://github.com/jveverka/iam-service)
 * [event-logger-service](event-logger-service)
 * [scheduler-engine](scheduler-service)
-* file-server - TBD
+* [config-server](config-server) 
 
 ### Local Infrastructure
 * [Mongo setup](docs/local-infrastructure/mongo-setup.md)
