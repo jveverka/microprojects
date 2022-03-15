@@ -12,5 +12,9 @@ RUN mkdir -p /etc/nginx/conf.d
 RUN chmod 755 /start-nginx.sh
 
 ENV USE_TLS=false
+ENV CS_SERVICE_NAME=reverse-proxy
+ENV CS_APPLICATION=application
+ENV CS_PROFILE=default
+ENV CS_LABEL=uat
 
 ENTRYPOINT ["/start-nginx.sh"]
