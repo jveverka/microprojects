@@ -1,3 +1,7 @@
+include "admin-server"
+include "config-server"
+include "auth-server"
+
 include "event-logger-service"
 include "events"
 

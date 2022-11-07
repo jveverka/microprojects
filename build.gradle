@@ -1,20 +1,23 @@
 subprojects {
     apply plugin: "java"
-    sourceCompatibility = '17'
+
+    targetCompatibility = JavaVersion.VERSION_17
+    sourceCompatibility = JavaVersion.VERSION_17
 
     repositories {
         mavenCentral()
     }
 }
 
-project(':event-logger-service') {
-}
+project(':admin-server') {}
+project(':config-server') {}
+project(':auth-server') {}
 
-project(':events') {
-}
+project(':event-logger-service') {}
 
-project(':scheduler-common') {
-}
+project(':events') {}
+
+project(':scheduler-common') {}
 
 project(':scheduler-service-app') {
     dependencies {

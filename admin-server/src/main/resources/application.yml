@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: adminserver
+  config:
+    import: configserver:${spring.cloud.config.uri}
+  cloud:
+    config:
+      name: adminserver
+      profile: ${CONFIG_PROFILE}
+      label: ${CONFIG_LABEL}
+      password: ${CS_PASSWORD}
+      uri: ${CS_URI}
