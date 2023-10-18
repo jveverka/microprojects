@@ -1,12 +1,4 @@
 subprojects {
-    apply plugin: "java"
-
-    targetCompatibility = JavaVersion.VERSION_21
-    sourceCompatibility = JavaVersion.VERSION_21
-
-    repositories {
-        mavenCentral()
-    }
 }
 
 project(':auth-server') {}
