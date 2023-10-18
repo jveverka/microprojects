@@ -1,14 +1,3 @@
 
-include "admin-server"
-include "config-server"
 include "auth-server"
-
-include "event-logger-service"
-include "events"
-
-include "scheduler-common"
-project(":scheduler-common").projectDir = new File("scheduler-service/scheduler-common")
-include "scheduler-service-app"
-project(":scheduler-service-app").projectDir = new File("scheduler-service/scheduler-service-app")
-include "scheduler-task-example"
-project(":scheduler-task-example").projectDir = new File("scheduler-service/scheduler-task-example")
+project(":auth-server").projectDir = new File("auth-server")
