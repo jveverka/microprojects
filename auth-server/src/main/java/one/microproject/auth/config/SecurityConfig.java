@@ -20,7 +20,7 @@ public class SecurityConfig {
         LOGGER.info("httpSecurity setup");
         return httpSecurity
                 .addFilterBefore(new SecurityFilter(), BasicAuthenticationFilter.class)
-                .securityMatcher("/api/v1/user/**")
+                .antMatcher("/api/v1/user/**")
                 .build();
     }
 
