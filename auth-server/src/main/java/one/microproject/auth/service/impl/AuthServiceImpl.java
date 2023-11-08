@@ -5,6 +5,7 @@ import one.microproject.auth.dto.IntrospectResponse;
 import one.microproject.auth.dto.TokenResponse;
 import one.microproject.auth.dto.UserAuthRequest;
 import one.microproject.auth.dto.UserData;
+import one.microproject.auth.exceptions.AuthException;
 import one.microproject.auth.service.AuthService;
 import one.microproject.auth.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +29,7 @@ public class AuthServiceImpl implements AuthService {
         if (userData.isPresent() && request.password().equals(userData.get().password())) {
             return new TokenResponse("valid");
         }
-        throw new UnsupportedOperationException();
+        throw new AuthException("User not valid.");
     }
 
     @Override
