@@ -11,4 +11,8 @@ public interface UserService {
 
     Optional<UserData> get(String username);
 
+    Optional<UserData> delete(String username);
+
+    void save(UserData userData);
+
 }

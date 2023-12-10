@@ -20,11 +20,13 @@ public class SecurityFilter implements Filter {
 
 
     public SecurityFilter() {
+        LOGGER.info("FILTER: created");
     }
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
         Filter.super.init(filterConfig);
+        LOGGER.info("FILTER: initialized");
     }
 
     @Override

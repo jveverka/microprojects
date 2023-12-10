@@ -28,4 +28,14 @@ public class UserServiceImpl implements UserService {
         return Optional.ofNullable(users.get(username));
     }
 
+    @Override
+    public Optional<UserData> delete(String username) {
+        return Optional.ofNullable(users.remove(username));
+    }
+
+    @Override
+    public void save(UserData userData) {
+        users.put(userData.userName(), userData);
+    }
+
 }
