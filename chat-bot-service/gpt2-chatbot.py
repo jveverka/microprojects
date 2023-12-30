@@ -13,11 +13,11 @@ def generate_text(prompt, model, tokenizer):
 
 model, tokenizer = load_model()
 
+print("Welcome to the GPT-based chatbot. Type 'exit' to end the conversation.")
 while True:
-    print("Welcome to the GPT-based chatbot. Type 'exit' to end the conversation.")
     user_input = input("You: ")
     if user_input.lower() == 'exit':
         print("Chatbot: Goodbye!")
         break
-    print(generate_text(user_input, model, tokenizer))
+    print("Chatbot: " + generate_text(user_input, model, tokenizer))
 
