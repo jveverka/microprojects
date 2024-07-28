@@ -5,4 +5,5 @@
 ### Build & Test
 ```shell
 gradle clean build test
+gradle --warning-mode all clean build test
 ```
