@@ -1,5 +1,6 @@
 package one.microproject.auth.controller;
 
+import one.microproject.auth.dto.ServerResponse;
 import one.microproject.auth.dto.UserData;
 import one.microproject.auth.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,9 +21,9 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping(path = "/api/v1/user/users", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<UserData>> getAll() {
-        return ResponseEntity.ok(userService.getAll());
+    @GetMapping(path = URLs.USERS_GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ServerResponse<List<UserData>>> getAll() {
+        return ResponseEntity.ok(ServerResponse.ok(userService.getAll()));
     }
 
 }

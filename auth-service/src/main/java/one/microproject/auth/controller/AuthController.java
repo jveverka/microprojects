@@ -1,9 +1,6 @@
 package one.microproject.auth.controller;
 
-import one.microproject.auth.dto.IntrospectRequest;
-import one.microproject.auth.dto.IntrospectResponse;
-import one.microproject.auth.dto.TokenResponse;
-import one.microproject.auth.dto.UserAuthRequest;
+import one.microproject.auth.dto.*;
 import one.microproject.auth.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -22,16 +19,16 @@ public class AuthController {
         this.authService = authService;
     }
 
-    @PostMapping(path = "/api/v1/auth/token", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<TokenResponse> token(@RequestBody UserAuthRequest request) {
+    @PostMapping(path = URLs.AUTH_TOKEN_GET, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ServerResponse<TokenResponse>> token(@RequestBody UserAuthRequest request) {
         TokenResponse response = authService.token(request);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(ServerResponse.ok(response));
     }
 
-    @PostMapping(path = "/api/v1/auth/introspect", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<IntrospectResponse> introspect(@RequestBody IntrospectRequest request) {
+    @PostMapping(path = URLs.AUTH_TOKEN_INTROSPECT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ServerResponse<IntrospectResponse>> introspect(@RequestBody IntrospectRequest request) {
         IntrospectResponse response = authService.introspect(request);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(ServerResponse.ok(response));
     }
 
 }
